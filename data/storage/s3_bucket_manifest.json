@@ -1,0 +1,1020 @@
+{
+  "bucket_name": "iot-secure-telemetry-vault",
+  "created_at": "2026-11-01T08:00:00Z",
+  "region": "us-east-1",
+  "versioning": {
+    "status": "Enabled",
+    "mfa_delete": "Disabled"
+  },
+  "public_access_block": {
+    "BlockPublicAcls": true,
+    "IgnorePublicAcls": true,
+    "BlockPublicPolicy": true,
+    "RestrictPublicBuckets": true
+  },
+  "server_side_encryption": {
+    "rules": [
+      {
+        "apply_server_side_encryption_by_default": {
+          "sse_algorithm": "AES256"
+        }
+      }
+    ]
+  },
+  "lifecycle_configuration": {
+    "rules": [
+      {
+        "id": "IoTTelemetryArchiveRule",
+        "status": "Enabled",
+        "filter": {
+          "prefix": "sensors/"
+        },
+        "transitions": [
+          {
+            "days": 30,
+            "storage_class": "STANDARD_IA"
+          },
+          {
+            "days": 90,
+            "storage_class": "GLACIER"
+          }
+        ],
+        "noncurrent_version_expiration": {
+          "noncurrent_days": 365
+        }
+      }
+    ]
+  },
+  "objects": {
+    "sensors/daily_telemetry_2026-11-16.json": [
+      {
+        "version_id": "v_20261119_173309_959e889c",
+        "key": "sensors/daily_telemetry_2026-11-16.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "75bd185ece0152577e500cd6043bdf4751ba5192fb8a591eaefc50af8e1e2e67",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:10.000782Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-16.json_v_20261119_173309_959e889c.dat",
+        "is_latest": true,
+        "metadata": {
+          "backup_date": "2026-11-16",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      }
+    ],
+    "sensors/daily_telemetry_2026-11-17.json": [
+      {
+        "version_id": "del_1795367471_ba60a9",
+        "key": "sensors/daily_telemetry_2026-11-17.json",
+        "is_delete_marker": true,
+        "is_latest": true,
+        "created_at": "2026-11-22T17:11:11.557571Z",
+        "deleted_by": "BackupAdmin"
+      },
+      {
+        "version_id": "v_20261119_173310_9ed662d7",
+        "key": "sensors/daily_telemetry_2026-11-17.json",
+        "size_bytes": 35521,
+        "size_kb": 34.69,
+        "sha256": "6ba245ee48bc2936530fb1d4269a1b714c24a2e59b6f6b22864b9dfbdb56e371",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:10.998653Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-17.json_v_20261119_173310_9ed662d7.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-17",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      }
+    ],
+    "sensors/daily_telemetry_2026-11-18.json": [
+      {
+        "version_id": "v_20261122_174843_e65aa483",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35515,
+        "size_kb": 34.68,
+        "sha256": "5c79a26f1d4d997e3681b41e34cab7c1f764d00ada4c6768b1e1afb3c51990b1",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:48:43.719183Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261122_174843_e65aa483.dat",
+        "is_latest": true,
+        "metadata": {
+          "backup_date": "2026-11-18",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173312_c69a447b",
+          "restored_at": "2026-11-22T17:48:43.716481Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261122_173518_67e079d1",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35515,
+        "size_kb": 34.68,
+        "sha256": "5c79a26f1d4d997e3681b41e34cab7c1f764d00ada4c6768b1e1afb3c51990b1",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:35:18.735314Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261122_173518_67e079d1.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-18",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173312_c69a447b",
+          "restored_at": "2026-11-22T17:35:18.734352Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261122_172406_49092524",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35515,
+        "size_kb": 34.68,
+        "sha256": "5c79a26f1d4d997e3681b41e34cab7c1f764d00ada4c6768b1e1afb3c51990b1",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:24:06.624309Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261122_172406_49092524.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-18",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173312_c69a447b",
+          "restored_at": "2026-11-22T17:24:06.622288Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261122_164748_7c7f8959",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35515,
+        "size_kb": 34.68,
+        "sha256": "5c79a26f1d4d997e3681b41e34cab7c1f764d00ada4c6768b1e1afb3c51990b1",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:47:48.961346Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261122_164748_7c7f8959.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-18",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173312_c69a447b",
+          "restored_at": "2026-11-22T16:47:48.960363Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261119_173316_a8146317",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35586,
+        "size_kb": 34.75,
+        "sha256": "faee67864209d9989d30199185ccec80129af440f9dfc4a5b7e79c58c3500d59",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:16.483498Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261119_173316_a8146317.dat",
+        "is_latest": false,
+        "metadata": {
+          "sensor_type": "Final Certified Baseline",
+          "patch": "v2.2"
+        }
+      },
+      {
+        "version_id": "v_20261119_173315_9056bf01",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35606,
+        "size_kb": 34.77,
+        "sha256": "63c76500d7ee8e87245b7b48687339ef9a01bbff95efbb3d42422d706712357e",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:15.081387Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261119_173315_9056bf01.dat",
+        "is_latest": false,
+        "metadata": {
+          "sensor_type": "Recalibrated Sensor Batch",
+          "patch": "v2.1"
+        }
+      },
+      {
+        "version_id": "v_20261119_173312_c69a447b",
+        "key": "sensors/daily_telemetry_2026-11-18.json",
+        "size_bytes": 35515,
+        "size_kb": 34.68,
+        "sha256": "5c79a26f1d4d997e3681b41e34cab7c1f764d00ada4c6768b1e1afb3c51990b1",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:12.304612Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-18.json_v_20261119_173312_c69a447b.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-18",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      }
+    ],
+    "sensors/daily_telemetry_2026-11-19.json": [
+      {
+        "version_id": "v_20261122_174843_4f54294d",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35519,
+        "size_kb": 34.69,
+        "sha256": "e5c56f3c73192f90e70224854089dd04e79a27f84e86ee9000f0883807976ae7",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:48:43.647209Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_174843_4f54294d.dat",
+        "is_latest": true,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261122_173518_9b397190",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35521,
+        "size_kb": 34.69,
+        "sha256": "6a8a14c621823c7cdc9e5605c8b3228b12ac9a0542433935306f6a32b16b823e",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:35:18.673290Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_173518_9b397190.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261122_172406_9b82d7dd",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35518,
+        "size_kb": 34.69,
+        "sha256": "ab64e497f315e3948dc41507c6265412f8568c9d447f1838e706eb5ea83a3c1b",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:24:06.578029Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_172406_9b82d7dd.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261122_171102_0caf1faa",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35523,
+        "size_kb": 34.69,
+        "sha256": "dfdca46c06430b9c039fefed9fb2db74de14f7978dd2e4bc7a67a61cb06fc8d9",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:11:02.228973Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_171102_0caf1faa.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261122_164726_9693234a",
+          "restored_at": "2026-11-22T17:11:02.225473Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261122_164748_6108b83e",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35529,
+        "size_kb": 34.7,
+        "sha256": "8df1728d06a9865019b62050d894230ee6817abbe79a1f02933ec756724a4094",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:47:48.928273Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_164748_6108b83e.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261122_164726_9693234a",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35523,
+        "size_kb": 34.69,
+        "sha256": "dfdca46c06430b9c039fefed9fb2db74de14f7978dd2e4bc7a67a61cb06fc8d9",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:47:26.258698Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_164726_9693234a.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261122_164707_6c6e697e",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35520,
+        "size_kb": 34.69,
+        "sha256": "5e2e340ba27ce935aad8aa829a2ac296cc84cc26c918db64f5b7ba3a905ab221",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:47:07.879482Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261122_164707_6c6e697e.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261119_180308_14d91f64",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "da03952399312c9b8dcd2d33baf849ecb994ef7cc67653fb85d8e4a433b3d8d3",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T18:03:08.638511Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_180308_14d91f64.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173313_fa6b0ecf",
+          "restored_at": "2026-11-19T18:03:08.637502Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261119_180308_32282740",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35519,
+        "size_kb": 34.69,
+        "sha256": "b57e48ee1d850c057b0b4867aabaeb60a0d441b970faca72a8ea49af9a4f7755",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T18:03:08.590285Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_180308_32282740.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261119_180140_36737147",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35519,
+        "size_kb": 34.69,
+        "sha256": "422d3d12712ebf29a295e30b95eda3af79ff8fd870aa5924f8744b6c77d2dd6e",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T18:01:40.804700Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_180140_36737147.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261119_175107_8b315a35",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "da03952399312c9b8dcd2d33baf849ecb994ef7cc67653fb85d8e4a433b3d8d3",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:51:07.707309Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_175107_8b315a35.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173313_fa6b0ecf",
+          "restored_at": "2026-11-19T17:51:07.706310Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261119_175107_dc58aa8d",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35520,
+        "size_kb": 34.69,
+        "sha256": "c9d5d4df648420cc78d7913ae64817ec96df5476aa216b1bc849d9f5a9e23acb",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:51:07.682340Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_175107_dc58aa8d.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261119_173411_b6acf3ea",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "da03952399312c9b8dcd2d33baf849ecb994ef7cc67653fb85d8e4a433b3d8d3",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:34:11.938685Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_173411_b6acf3ea.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15",
+          "restored_from_version": "v_20261119_173313_fa6b0ecf",
+          "restored_at": "2026-11-19T17:34:11.937686Z",
+          "restored_by": "BackupAdmin"
+        }
+      },
+      {
+        "version_id": "v_20261119_173411_e006ec74",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "a556147e6298209bed2d6bdfcd6aaac01fba55f51626b3a07f3150297cc3de58",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:34:11.882770Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_173411_e006ec74.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      },
+      {
+        "version_id": "v_20261119_173313_fa6b0ecf",
+        "key": "sensors/daily_telemetry_2026-11-19.json",
+        "size_bytes": 35517,
+        "size_kb": 34.68,
+        "sha256": "da03952399312c9b8dcd2d33baf849ecb994ef7cc67653fb85d8e4a433b3d8d3",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-19T17:33:13.718410Z",
+        "age_days": 0,
+        "uploaded_by_role": "SensorDevice",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_daily_telemetry_2026-11-19.json_v_20261119_173313_fa6b0ecf.dat",
+        "is_latest": false,
+        "metadata": {
+          "backup_date": "2026-11-19",
+          "sensor_type": "Multi-Sensor IoT Daily Telemetry",
+          "record_count": 96,
+          "compression": "none",
+          "origin_ip": "10.0.4.15"
+        }
+      }
+    ],
+    "sensors/env/ambient_weather_mast.json": [
+      {
+        "version_id": "v_20261122_164410_01475ff4",
+        "key": "sensors/env/ambient_weather_mast.json",
+        "size_bytes": 35669,
+        "size_kb": 34.83,
+        "sha256": "aa1d705c124571504492e4237c48b2e9e5ec97b87a697066ac1a3f5e5d15e857",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:10.327441Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_ambient_weather_mast.json_v_20261122_164410_01475ff4.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "env",
+          "description": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "tags": "Weather, Temperature, Ambient, IoT",
+          "sensor_type": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164409_8a42356a",
+        "key": "sensors/env/ambient_weather_mast.json",
+        "size_bytes": 35660,
+        "size_kb": 34.82,
+        "sha256": "3b36215b588958623d24b51e1e413fffa0b4ae698593cae65c19c2a1e277616f",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:09.415385Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_ambient_weather_mast.json_v_20261122_164409_8a42356a.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "env",
+          "description": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "tags": "Weather, Temperature, Ambient, IoT",
+          "sensor_type": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164408_5c00645d",
+        "key": "sensors/env/ambient_weather_mast.json",
+        "size_bytes": 35590,
+        "size_kb": 34.76,
+        "sha256": "aea0eb3179849cfe458a9ea1b60e04328a06de2db7686174688c5ece7398033b",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:08.543701Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_ambient_weather_mast.json_v_20261122_164408_5c00645d.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "env",
+          "description": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "tags": "Weather, Temperature, Ambient, IoT",
+          "sensor_type": "North Campus Meteorological Mast & Ambient Weather Telemetry",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/env/air_quality_north.json": [
+      {
+        "version_id": "v_20261122_164411_389b6989",
+        "key": "sensors/env/air_quality_north.json",
+        "size_bytes": 35586,
+        "size_kb": 34.75,
+        "sha256": "3ad6e0c052edab53861174febdce3307b63084f96814ab3e741384f0fe904d58",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:11.305627Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_air_quality_north.json_v_20261122_164411_389b6989.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "env",
+          "description": "Air Quality Particle Count (PM2.5, CO2, Humidity) Daily Batch",
+          "tags": "AirQuality, PM2.5, Sensors",
+          "sensor_type": "Air Quality Particle Count (PM2.5, CO2, Humidity) Daily Batch",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/turbine/wind_turbine_unit4.json": [
+      {
+        "version_id": "v_20261122_164414_82b4bc36",
+        "key": "sensors/turbine/wind_turbine_unit4.json",
+        "size_bytes": 35662,
+        "size_kb": 34.83,
+        "sha256": "cff00c2d9376945ba4e05aa1304593003851c958d3e5ac8fe0fa50ab7c8a9256",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:14.141609Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_turbine_wind_turbine_unit4.json_v_20261122_164414_82b4bc36.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "turbine",
+          "description": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "tags": "Turbine, Industrial, Bearing, Energy",
+          "sensor_type": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "device_id": "TURBINE-EDGE-04",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164413_5bb6c77e",
+        "key": "sensors/turbine/wind_turbine_unit4.json",
+        "size_bytes": 35658,
+        "size_kb": 34.82,
+        "sha256": "44bf50bd7262a307fd6612d0ed55eae427d2995ca0b5b4fbe2d0bf0604cd97a8",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:13.146772Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_turbine_wind_turbine_unit4.json_v_20261122_164413_5bb6c77e.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "turbine",
+          "description": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "tags": "Turbine, Industrial, Bearing, Energy",
+          "sensor_type": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "device_id": "TURBINE-EDGE-04",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164412_77ee5731",
+        "key": "sensors/turbine/wind_turbine_unit4.json",
+        "size_bytes": 35590,
+        "size_kb": 34.76,
+        "sha256": "62d2b006a4f1be9524ce68b53e2a3bbaace19d3c70487a56864d9f00af313dea",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:12.193169Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_turbine_wind_turbine_unit4.json_v_20261122_164412_77ee5731.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "turbine",
+          "description": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "tags": "Turbine, Industrial, Bearing, Energy",
+          "sensor_type": "Generator Hall 2 Wind Turbine Unit 4 RPM & Bearing Temperature",
+          "device_id": "TURBINE-EDGE-04",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/turbine/vibration_analysis.json": [
+      {
+        "version_id": "v_20261122_164415_d26c34cb",
+        "key": "sensors/turbine/vibration_analysis.json",
+        "size_bytes": 35588,
+        "size_kb": 34.75,
+        "sha256": "b92dace3896825ddde0ffc56bcc0941b49be831fb97d85571d6b0e40b40cdc18",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:15.680597Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_turbine_vibration_analysis.json_v_20261122_164415_d26c34cb.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "turbine",
+          "description": "High Frequency Vibration Spectrum & Harmonics Analysis",
+          "tags": "Vibration, Predictive-Maintenance, FFT",
+          "sensor_type": "High Frequency Vibration Spectrum & Harmonics Analysis",
+          "device_id": "TURBINE-EDGE-04",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/grid/substation_3b_power.json": [
+      {
+        "version_id": "v_20261122_164418_f3ef0f1c",
+        "key": "sensors/grid/substation_3b_power.json",
+        "size_bytes": 35663,
+        "size_kb": 34.83,
+        "sha256": "45accaae0b0755cfd535b01fdc9db73a96426eb059e5f9c874ff822e25c56a6f",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:18.882685Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_grid_substation_3b_power.json_v_20261122_164418_f3ef0f1c.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "grid",
+          "description": "Substation 3B 3-Phase Grid Voltage, Current & Power Factor",
+          "tags": "SmartGrid, Voltage, Substation, Power",
+          "sensor_type": "Substation 3B 3-Phase Grid Voltage, Current & Power Factor",
+          "device_id": "SMART-METER-09",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164417_75acc391",
+        "key": "sensors/grid/substation_3b_power.json",
+        "size_bytes": 35590,
+        "size_kb": 34.76,
+        "sha256": "68041bca67c7a0b1b75fbc2eef4ba1b894907c1cced2972ff1312b804573d538",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:17.220457Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_grid_substation_3b_power.json_v_20261122_164417_75acc391.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "grid",
+          "description": "Substation 3B 3-Phase Grid Voltage, Current & Power Factor",
+          "tags": "SmartGrid, Voltage, Substation, Power",
+          "sensor_type": "Substation 3B 3-Phase Grid Voltage, Current & Power Factor",
+          "device_id": "SMART-METER-09",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/grid/transformer_telemetry.json": [
+      {
+        "version_id": "v_20261122_164420_ad704e6d",
+        "key": "sensors/grid/transformer_telemetry.json",
+        "size_bytes": 35591,
+        "size_kb": 34.76,
+        "sha256": "8531775b2092cf4321a4ff18b3a672b37a7aef1a7b2b8f8a4ab03c9d45f19c36",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:20.586640Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_grid_transformer_telemetry.json_v_20261122_164420_ad704e6d.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "grid",
+          "description": "Step-Down Transformer Thermal Load & Reactive Power Telemetry",
+          "tags": "Transformer, Grid-Safety, Thermal",
+          "sensor_type": "Step-Down Transformer Thermal Load & Reactive Power Telemetry",
+          "device_id": "SMART-METER-09",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/hvac/chiller_plant_cleanroom.json": [
+      {
+        "version_id": "v_20261122_164424_875c0cdb",
+        "key": "sensors/hvac/chiller_plant_cleanroom.json",
+        "size_bytes": 35666,
+        "size_kb": 34.83,
+        "sha256": "300a3301a411ddbd51d0b457dcb9ead8332ee108244a2b5e12940df2bdb93059",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:24.355463Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_hvac_chiller_plant_cleanroom.json_v_20261122_164424_875c0cdb.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "hvac",
+          "description": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "tags": "Cleanroom, Chiller, HVAC, Airflow",
+          "sensor_type": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "device_id": "FACTORY-HVAC-12",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164423_4cc436d8",
+        "key": "sensors/hvac/chiller_plant_cleanroom.json",
+        "size_bytes": 35661,
+        "size_kb": 34.83,
+        "sha256": "9ddca339b2c17f5dac7d9b1d27f63d5fa749c21de455bb5d3fd47f5181b7f455",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:23.652477Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_hvac_chiller_plant_cleanroom.json_v_20261122_164423_4cc436d8.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "hvac",
+          "description": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "tags": "Cleanroom, Chiller, HVAC, Airflow",
+          "sensor_type": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "device_id": "FACTORY-HVAC-12",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      },
+      {
+        "version_id": "v_20261122_164422_efeda449",
+        "key": "sensors/hvac/chiller_plant_cleanroom.json",
+        "size_bytes": 35590,
+        "size_kb": 34.76,
+        "sha256": "1ad2ead184c379abd64ce95eb8e9fb85341ffe6adb464e795a50f9efdc47e630",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:22.168784Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_hvac_chiller_plant_cleanroom.json_v_20261122_164422_efeda449.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "hvac",
+          "description": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "tags": "Cleanroom, Chiller, HVAC, Airflow",
+          "sensor_type": "Cleanroom 1 Chiller Loop, Differential Pressure & Airflow CFM",
+          "device_id": "FACTORY-HVAC-12",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/hvac/compressor_runtime.json": [
+      {
+        "version_id": "v_20261122_164425_3684cd5a",
+        "key": "sensors/hvac/compressor_runtime.json",
+        "size_bytes": 35585,
+        "size_kb": 34.75,
+        "sha256": "ea898f5d76ec37e28f4859748a03ebeb208aa545ec283d90eb7164312a293372",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T16:44:25.219501Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_hvac_compressor_runtime.json_v_20261122_164425_3684cd5a.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "hvac",
+          "description": "Industrial Refrigerant Compressor Load & Duty Cycle Log",
+          "tags": "Compressor, DutyCycle, HVAC",
+          "sensor_type": "Industrial Refrigerant Compressor Load & Duty Cycle Log",
+          "device_id": "FACTORY-HVAC-12",
+          "backup_date": "2026-11-22",
+          "record_count": 96
+        }
+      }
+    ],
+    "sensors/env/temperature_2026-11-22.csv": [
+      {
+        "version_id": "v_20261122_173033_ed756123",
+        "key": "sensors/env/temperature_2026-11-22.csv",
+        "size_bytes": 1142,
+        "size_kb": 1.12,
+        "sha256": "384fd6e83f6e29090e1cabbb2c2a69d5e6860ad5b0d41270098aece28706abdd",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:30:33.234512Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_temperature_2026-11-22.csv_v_20261122_173033_ed756123.dat",
+        "is_latest": true,
+        "metadata": {
+          "department": "env",
+          "description": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "tags": "AgroSense, Temperature, Humidity, CSV",
+          "sensor_type": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 12
+        }
+      },
+      {
+        "version_id": "v_20261122_173033_dfcbd6f2",
+        "key": "sensors/env/temperature_2026-11-22.csv",
+        "size_bytes": 1142,
+        "size_kb": 1.12,
+        "sha256": "3367321fffd44c345b52fe9f78041d4b9a391103aad1b99354067d4f1d6447d4",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:30:33.230145Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_temperature_2026-11-22.csv_v_20261122_173033_dfcbd6f2.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "env",
+          "description": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "tags": "AgroSense, Temperature, Humidity, CSV",
+          "sensor_type": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 12
+        }
+      },
+      {
+        "version_id": "v_20261122_173033_331c3964",
+        "key": "sensors/env/temperature_2026-11-22.csv",
+        "size_bytes": 1090,
+        "size_kb": 1.06,
+        "sha256": "eff4935b8752a4641d73ef100cda9247e0840c514a7ab470ebf77b8b7c107c4b",
+        "encryption": "AES256",
+        "storage_class": "STANDARD",
+        "created_at": "2026-11-22T17:30:33.226147Z",
+        "age_days": 0,
+        "uploaded_by_role": "BackupAdmin",
+        "file_path": "D:\\Gen Ai\\Secure-IoT-Data-Backup-System\\data\\storage\\sensors_env_temperature_2026-11-22.csv_v_20261122_173033_331c3964.dat",
+        "is_latest": false,
+        "metadata": {
+          "department": "env",
+          "description": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "tags": "AgroSense, Temperature, Humidity, CSV",
+          "sensor_type": "AgroSense Air Temperature & Humidity Daily Log (LoRaWAN IoT)",
+          "device_id": "ENV-STATION-01",
+          "backup_date": "2026-11-22",
+          "record_count": 12
+        }
+      }
+    ]
+  }
+}

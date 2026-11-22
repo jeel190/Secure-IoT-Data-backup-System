@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Access Control - IoT Backup Vault{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Access Control & Role Permissions</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Role-based security policies governing ingestion, restoration, and administration.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">Current Role:</span>
+            <span class="px-2.5 py-1 rounded-md bg-slate-800 text-sky-400 font-mono text-xs font-semibold border border-slate-700">{{ active_role }}</span>
+        </div>
+    </div>
+
+    <!-- 4 Clean Role Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Role 1: BackupAdmin -->
+        <div class="bg-slate-900 border {% if active_role == 'BackupAdmin' %}border-sky-500/60 ring-1 ring-sky-500/30{% else %}border-slate-800{% endif %} rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-950 text-sky-400 border border-sky-800">Full Access</span>
+                    <i class="fa-solid fa-user-gear text-sky-400 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-white text-sm">BackupAdmin</h3>
+                <p class="text-[11px] text-slate-400 mt-1 mb-3">Full permissions for creating backups, restoring snapshots, managing retention, and reviewing logs.</p>
+                <div class="space-y-1 text-[11px] font-mono text-slate-300">
+                    <div class="flex items-center gap-1.5 text-emerald-400"><i class="fa-solid fa-check text-[10px]"></i> Create & Read Backups</div>
+                    <div class="flex items-center gap-1.5 text-emerald-400"><i class="fa-solid fa-check text-[10px]"></i> Point-in-time Restore</div>
+                    <div class="flex items-center gap-1.5 text-emerald-400"><i class="fa-solid fa-check text-[10px]"></i> Delete & Purge Versions</div>
+                </div>
+            </div>
+            <button onclick="switchRole('BackupAdmin')" class="mt-4 w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-lg border border-slate-700 transition-colors">
+                {% if active_role == 'BackupAdmin' %}&#10003; Currently Active{% else %}Switch to Admin{% endif %}
+            </button>
+        </div>
+
+        <!-- Role 2: SensorDevice -->
+        <div class="bg-slate-900 border {% if active_role == 'SensorDevice' %}border-amber-500/60 ring-1 ring-amber-500/30{% else %}border-slate-800{% endif %} rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-950 text-amber-400 border border-amber-800">Write-Only</span>
+                    <i class="fa-solid fa-satellite-dish text-amber-400 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-white text-sm">SensorDevice</h3>
+                <p class="text-[11px] text-slate-400 mt-1 mb-3">IoT device role. Restricted strictly to uploading daily telemetry. Deletions and policy changes blocked.</p>
+                <div class="space-y-1 text-[11px] font-mono text-slate-300">
+                    <div class="flex items-center gap-1.5 text-emerald-400"><i class="fa-solid fa-check text-[10px]"></i> Upload Telemetry</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-xmark text-[10px]"></i> Deletion (Blocked)</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-xmark text-[10px]"></i> Policy Changes (Blocked)</div>
+                </div>
+            </div>
+            <button onclick="switchRole('SensorDevice')" class="mt-4 w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-lg border border-slate-700 transition-colors">
+                {% if active_role == 'SensorDevice' %}&#10003; Currently Active{% else %}Switch to Sensor{% endif %}
+            </button>
+        </div>
+
+        <!-- Role 3: Auditor -->
+        <div class="bg-slate-900 border {% if active_role == 'Auditor' %}border-indigo-500/60 ring-1 ring-indigo-500/30{% else %}border-slate-800{% endif %} rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-950 text-indigo-400 border border-indigo-800">Read-Only</span>
+                    <i class="fa-solid fa-magnifying-glass text-indigo-400 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-white text-sm">Auditor</h3>
+                <p class="text-[11px] text-slate-400 mt-1 mb-3">Compliance auditor role. Permitted to inspect catalog, check integrity, and review audit logs.</p>
+                <div class="space-y-1 text-[11px] font-mono text-slate-300">
+                    <div class="flex items-center gap-1.5 text-emerald-400"><i class="fa-solid fa-check text-[10px]"></i> View Backups & Logs</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-xmark text-[10px]"></i> Uploads (Blocked)</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-xmark text-[10px]"></i> Deletions (Blocked)</div>
+                </div>
+            </div>
+            <button onclick="switchRole('Auditor')" class="mt-4 w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-lg border border-slate-700 transition-colors">
+                {% if active_role == 'Auditor' %}&#10003; Currently Active{% else %}Switch to Auditor{% endif %}
+            </button>
+        </div>
+
+        <!-- Role 4: AnonymousUser -->
+        <div class="bg-slate-900 border {% if active_role == 'AnonymousUser' %}border-rose-500/60 ring-1 ring-rose-500/30{% else %}border-slate-800{% endif %} rounded-xl p-4 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-950 text-rose-400 border border-rose-800">Restricted</span>
+                    <i class="fa-solid fa-ban text-rose-400 text-sm"></i>
+                </div>
+                <h3 class="font-bold text-white text-sm">Guest</h3>
+                <p class="text-[11px] text-slate-400 mt-1 mb-3">Unauthenticated external actor. All vault actions are blocked by private access policies.</p>
+                <div class="space-y-1 text-[11px] font-mono text-slate-300">
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-ban text-[10px]"></i> Block Public Reads</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-ban text-[10px]"></i> Block Public Writes</div>
+                    <div class="flex items-center gap-1.5 text-rose-400"><i class="fa-solid fa-ban text-[10px]"></i> Block Public Deletes</div>
+                </div>
+            </div>
+            <button onclick="switchRole('AnonymousUser')" class="mt-4 w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-lg border border-slate-700 transition-colors">
+                {% if active_role == 'AnonymousUser' %}&#10003; Currently Active{% else %}Switch to Guest{% endif %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Live Permission Testing Simulator -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center gap-2.5 mb-3 pb-2 border-b border-slate-800">
+            <i class="fa-solid fa-vial text-amber-400 text-sm"></i>
+            <div>
+                <h3 class="font-semibold text-white text-xs">Permission Evaluator</h3>
+                <p class="text-[11px] text-slate-400">Test action authorization against resources for any role</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Action</label>
+                <select id="testActionSelect" class="w-full bg-slate-950 text-xs text-slate-200 border border-slate-700 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                    <option value="s3:PutObject">Upload Backup (s3:PutObject)</option>
+                    <option value="s3:DeleteObject">Delete Backup (s3:DeleteObject)</option>
+                    <option value="s3:DeleteObjectVersion">Purge Version (s3:DeleteObjectVersion)</option>
+                    <option value="s3:RestoreObject">Restore Snapshot (s3:RestoreObject)</option>
+                    <option value="s3:ListBucket">List Backups (s3:ListBucket)</option>
+                    <option value="s3:GetObject">Download Backup (s3:GetObject)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Resource</label>
+                <input type="text" id="testResourceArn" value="arn:aws:s3:::iot-secure-telemetry-vault/sensors/daily_telemetry.json" class="w-full bg-slate-950 text-xs font-mono text-slate-200 border border-slate-700 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-sky-500">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Role</label>
+                <div class="flex items-center gap-2">
+                    <select id="testRoleSelect" class="w-full bg-slate-950 text-xs text-slate-200 border border-slate-700 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                        <option value="BackupAdmin" {% if active_role == 'BackupAdmin' %}selected{% endif %}>BackupAdmin</option>
+                        <option value="SensorDevice" {% if active_role == 'SensorDevice' %}selected{% endif %}>SensorDevice</option>
+                        <option value="Auditor" {% if active_role == 'Auditor' %}selected{% endif %}>Auditor</option>
+                        <option value="AnonymousUser" {% if active_role == 'AnonymousUser' %}selected{% endif %}>Guest</option>
+                    </select>
+                    <button onclick="runPermissionTest()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold shadow-sm whitespace-nowrap active:scale-95 transition-all">
+                        Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Box -->
+        <div id="permTestResult" class="hidden p-3 rounded-lg border font-mono text-xs transition-all"></div>
+    </div>
+
+    <!-- Permissions Matrix -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="p-3 border-b border-slate-800">
+            <h3 class="font-semibold text-white text-xs">Role Permissions Matrix</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse font-mono">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 text-[11px]">
+                        <th class="py-2.5 px-3">Operation</th>
+                        <th class="py-2.5 px-3 text-center">Admin</th>
+                        <th class="py-2.5 px-3 text-center">Sensor Node</th>
+                        <th class="py-2.5 px-3 text-center">Auditor</th>
+                        <th class="py-2.5 px-3 text-center">Guest</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300">
+                    <tr>
+                        <td class="py-2.5 px-3 font-medium text-slate-200">Upload Backup</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5 px-3 font-medium text-slate-200">Read / Download</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5 px-3 font-medium text-slate-200">Restore Snapshot</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5 px-3 font-medium text-slate-200">Delete / Purge</td>
+                        <td class="py-2.5 px-3 text-center text-emerald-400">&#10003; Allowed</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                        <td class="py-2.5 px-3 text-center text-rose-400">&#10007; Denied</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function runPermissionTest() {
+    const action = document.getElementById('testActionSelect').value;
+    const resource = document.getElementById('testResourceArn').value;
+    const role = document.getElementById('testRoleSelect').value;
+    const resBox = document.getElementById('permTestResult');
+
+    fetch('/api/role/test-permission', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({action, resource, role})
+    })
+    .then(r => r.json())
+    .then(data => {
+        resBox.classList.remove('hidden', 'bg-emerald-950/70', 'border-emerald-700', 'text-emerald-300', 'bg-rose-950/70', 'border-rose-700', 'text-rose-300');
+        if (data.allowed) {
+            resBox.classList.add('bg-emerald-950/70', 'border-emerald-700', 'text-emerald-300');
+            resBox.innerHTML = `
+                <div class="font-bold mb-0.5">&#10003; ACTION PERMITTED: ${data.action}</div>
+                <div class="text-[11px] text-emerald-200">${data.reason}</div>
+            `;
+        } else {
+            resBox.classList.add('bg-rose-950/70', 'border-rose-700', 'text-rose-300');
+            resBox.innerHTML = `
+                <div class="font-bold mb-0.5">&#10007; 403 ACCESS DENIED: ${data.action}</div>
+                <div class="text-[11px] text-rose-200">${data.reason}</div>
+            `;
+        }
+    });
+}
+</script>
+{% endblock %}

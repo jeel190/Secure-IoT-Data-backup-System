@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Backup Vault | Secure Cloud Storage</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Smooth scrollbar for light theme */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 lg:px-8 py-3.5 flex items-center justify-between gap-4 shadow-xs">
+    <!-- Brand Title -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-base tracking-tight text-slate-900">IoT Backup Vault</span>
+          <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            System Online
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-500">Secure IoT Data Backup & Recovery</p>
+      </div>
+    </div>
+
+    <!-- Center Search Input -->
+    <div class="flex-1 max-w-md mx-4 hidden md:block">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input
+          type="text"
+          id="search-input"
+          oninput="handleSearch(this.value)"
+          placeholder="Search sensor backups, devices, tags..."
+          class="w-full bg-slate-100/80 border border-slate-200 text-slate-800 placeholder-slate-400 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-indigo-500 focus:bg-white transition"
+        />
+      </div>
+    </div>
+
+    <!-- Right Controls: Incident Bell, Security Center, Role Switcher, Ingest Button -->
+    <div class="flex items-center gap-2.5 shrink-0">
+      <!-- Admin Incident Bell with Pulsing Badge -->
+      <button
+        id="btn-admin-bell"
+        onclick="openAdminSecurityModal()"
+        title="Security Incident Alerts"
+        class="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-900 transition cursor-pointer"
+      >
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <span
+          id="bell-badge"
+          class="hidden absolute -top-1.5 -right-1.5 h-5 min-w-[20px] px-1.5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse border-2 border-white"
+        >0</span>
+      </button>
+
+      <!-- Security Center Quick Button -->
+      <button
+        id="btn-admin-panel"
+        onclick="openAdminSecurityModal()"
+        class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+      >
+        <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600"></i>
+        <span>Security Center</span>
+      </button>
+
+      <!-- Role Switcher Dropdown (Fulfills BackupAdmin vs SensorDevice permissions) -->
+      <div class="relative">
+        <select
+          id="user-role-select"
+          onchange="switchRole(this.value)"
+          class="bg-slate-100 border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
+        >
+          <option value="system_admin">Role: BackupAdmin (System Admin)</option>
+          <option value="sensor_edge">Role: Sensor Application (Write Only)</option>
+          <option value="compliance_auditor">Role: Compliance Auditor (Read Only)</option>
+          <option value="field_operator">Role: Field Operations Tech</option>
+          <option value="contractor_guest">Role: External Contractor (Restricted)</option>
+        </select>
+      </div>
+
+      <!-- Ingest Backup Button (Shown only when role can_upload) -->
+      <button
+        id="btn-top-upload"
+        onclick="openUploadModal()"
+        class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition cursor-pointer active:scale-95"
+      >
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Ingest Backup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN BODY LAYOUT -->
+  <div class="flex-1 flex max-w-[1600px] w-full mx-auto px-4 lg:px-8 py-6 gap-6">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 lg:w-72 shrink-0 space-y-5 hidden md:block">
+      <!-- Sensor Streams Nav -->
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-xs">
+        <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Sensor Streams</h3>
+        <nav class="space-y-1">
+          <button
+            onclick="selectFolder('all')"
+            id="folder-all"
+            class="folder-nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium bg-indigo-50 text-indigo-700 transition cursor-pointer"
+          >
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+              <span>All Sensor Backups</span>
+            </div>
+            <span id="count-all" class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">--</span>
+          </button>
+
+          <button
+            onclick="selectFolder('env')"
+            id="folder-env"
+            class="folder-nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+          >
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="cloud-rain" class="w-4 h-4 text-emerald-600"></i>
+              <span>Environmental Mast</span>
+            </div>
+            <span id="count-env" class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">--</span>
+          </button>
+
+          <button
+            onclick="selectFolder('turbine')"
+            id="folder-turbine"
+            class="folder-nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+          >
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="wind" class="w-4 h-4 text-sky-600"></i>
+              <span>Wind Turbines</span>
+            </div>
+            <span id="count-turbine" class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">--</span>
+          </button>
+
+          <button
+            onclick="selectFolder('grid')"
+            id="folder-grid"
+            class="folder-nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+          >
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="zap" class="w-4 h-4 text-amber-600"></i>
+              <span>Smart Energy Grid</span>
+            </div>
+            <span id="count-grid" class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">--</span>
+          </button>
+
+          <button
+            onclick="selectFolder('hvac')"
+            id="folder-hvac"
+            class="folder-nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+          >
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="thermometer-snowflake" class="w-4 h-4 text-indigo-600"></i>
+              <span>Cleanroom HVAC</span>
+            </div>
+            <span id="count-hvac" class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">--</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Active Role Card -->
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Role</span>
+          <span id="active-user-badge" class="px-2 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md">BackupAdmin</span>
+        </div>
+        <div>
+          <h4 id="active-user-name" class="text-xs font-bold text-slate-900">BackupAdmin (System Admin)</h4>
+          <p id="active-user-role-label" class="text-[11px] text-slate-500 mt-0.5 leading-snug">Full administrative privilege, key rotation & delete authority.</p>
+        </div>
+        <div class="pt-2 border-t border-slate-100 space-y-2">
+          <button
+            onclick="openPermissionsModal()"
+            class="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition cursor-pointer"
+          >
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>View Access Rules</span>
+          </button>
+          <button
+            id="btn-sidebar-admin-alerts"
+            onclick="openAdminSecurityModal()"
+            class="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer"
+          >
+            <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+            <span>Admin Incident Alerts</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Environmental Sensor Feed Card (AgroSense LoRaWAN Integration) -->
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Live Weather Station
+          </span>
+          <span class="text-[10px] text-slate-400 font-medium">Auto-Sync</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[10px] text-slate-500 block">Temperature</span>
+            <span id="live-temp-display" class="font-mono font-bold text-sm text-slate-900">
+              {{ live_weather.live_readings.temperature_c if live_weather.live_readings else "24.5" }}°C
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[10px] text-slate-500 block">Humidity</span>
+            <span id="live-humidity-display" class="font-mono font-bold text-sm text-indigo-600">
+              {{ live_weather.live_readings.relative_humidity_pct if live_weather.live_readings else "62" }}%
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[10px] text-slate-500 block">Air Pressure</span>
+            <span id="live-pressure-display" class="font-mono font-bold text-xs text-slate-700">
+              {{ live_weather.live_readings.surface_pressure_hpa if live_weather.live_readings else "1012" }} hPa
+            </span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[10px] text-slate-500 block">Wind Speed</span>
+            <span id="live-wind-display" class="font-mono font-bold text-xs text-slate-700">
+              {{ live_weather.live_readings.wind_speed_kmh if live_weather.live_readings else "12.4" }} km/h
+            </span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE / TABLE -->
+    <main class="flex-1 min-w-0 space-y-4">
+
+      <!-- 4 DASHBOARD STATS CARDS (ChatGPT Module 6 Proposed Interface) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] font-semibold uppercase tracking-wider">Backup Files</span>
+            <i data-lucide="file-check-2" class="w-4 h-4 text-indigo-600"></i>
+          </div>
+          <div id="stat-total-files" class="text-lg font-bold text-slate-900 font-mono">{{ stats.total_objects }} Files</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">Across 4 sensor streams</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] font-semibold uppercase tracking-wider">Stored Versions</span>
+            <i data-lucide="history" class="w-4 h-4 text-indigo-600"></i>
+          </div>
+          <div id="stat-total-versions" class="text-lg font-bold text-indigo-600 font-mono">{{ stats.total_versions }} Versions</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">Object versioning enabled</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] font-semibold uppercase tracking-wider">Vault Protection</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+          </div>
+          <div class="text-lg font-bold text-emerald-700">Private S3</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">Public access blocked</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] font-semibold uppercase tracking-wider">Daily Ingestion</span>
+            <i data-lucide="radio" class="w-4 h-4 text-emerald-600 animate-pulse"></i>
+          </div>
+          <div class="text-lg font-bold text-slate-900">Automated</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">AgroSense & Edge Sync</p>
+        </div>
+      </div>
+
+      <!-- Workspace Header -->
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 id="current-folder-title" class="text-lg font-bold text-slate-900 tracking-tight">All Sensor Backups</h1>
+            <span id="total-docs-count" class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-700 border border-slate-200">Loading...</span>
+          </div>
+          <p id="current-folder-desc" class="text-xs text-slate-500 mt-1">Viewing historical sensor backups with object versioning and recovery.</p>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            onclick="loadDocuments()"
+            title="Refresh stream"
+            class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition cursor-pointer"
+          >
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+          <button
+            id="btn-table-upload"
+            onclick="openUploadModal()"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+          >
+            <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+            <span>Upload Daily Backup</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sensor Backups Table -->
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                <th class="py-3.5 px-5">Backup File</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Stream</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Ingested Date</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Size & Versions</th>
+                <th class="py-3.5 px-5 text-right whitespace-nowrap">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="documents-tbody" class="divide-y divide-slate-100 text-xs text-slate-700">
+              <tr>
+                <td colspan="5" class="text-center py-12 text-slate-400">
+                  <div class="flex flex-col items-center justify-center gap-2">
+                    <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-indigo-600"></i>
+                    <span>Loading sensor backups...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- FLOATING INCIDENT ALERT TOAST -->
+  <div
+    id="live-alert-toast"
+    class="fixed bottom-6 right-6 z-50 max-w-md w-full bg-white border border-rose-200 text-slate-900 rounded-2xl p-4 shadow-xl flex items-start gap-3.5 transform translate-x-full opacity-0 transition-all duration-300 pointer-events-auto"
+  >
+    <div class="h-9 w-9 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center shrink-0">
+      <i data-lucide="shield-alert" class="w-5 h-5"></i>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between gap-2">
+        <h4 id="live-toast-title" class="text-xs font-bold text-rose-700">Security Incident Detected</h4>
+        <span id="live-toast-time" class="text-[10px] font-mono text-slate-400">Just now</span>
+      </div>
+      <p id="live-toast-msg" class="text-xs text-slate-600 mt-1 leading-relaxed">Unauthorized action was blocked by Least-Privilege access control.</p>
+    </div>
+  </div>
+
+  <!-- ==================== 5 MODALS ==================== -->
+
+  <!-- MODAL 1: ACCESS DENIED MODAL -->
+  <div id="access-denied-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+      <div class="h-12 w-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto">
+        <i data-lucide="shield-x" class="w-6 h-6"></i>
+      </div>
+      <div class="text-center space-y-1.5">
+        <h3 class="text-base font-bold text-slate-900">Access Restricted by IAM Policy</h3>
+        <p id="denied-modal-text" class="text-xs text-slate-500 leading-relaxed">
+          Your current role does not have permission to access this sensor stream under Least-Privilege security policies.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Active Role:</span>
+          <span id="denied-current-role" class="text-slate-800 font-semibold">--</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Target Stream:</span>
+          <span id="denied-target-dept" class="text-indigo-600 font-semibold">--</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Security Status:</span>
+          <span class="text-rose-600 font-semibold">Violation Logged to Security Center</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button
+          onclick="closeDeniedModal()"
+          class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+        >
+          Dismiss
+        </button>
+        <button
+          onclick="closeDeniedModal(); openPermissionsModal();"
+          class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer"
+        >
+          View Access Rules
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: UPLOAD DAILY SENSOR BACKUP MODAL (Supports CSV & JSON) -->
+  <div id="upload-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Upload Sensor Backup</h3>
+            <p class="text-[11px] text-slate-500">Stores backup with automatic version tracking</p>
+          </div>
+        </div>
+        <button onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Error feedback -->
+      <div id="upload-error-msg" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs leading-relaxed"></div>
+
+      <form id="upload-form" onsubmit="submitUpload(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Target Sensor Stream</label>
+          <select id="upload-dept" class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2.5 focus:border-indigo-500 focus:outline-none">
+            <option value="env">Environmental Station (ENV-01)</option>
+            <option value="turbine">Wind Turbines (TURBINE-04)</option>
+            <option value="grid">Smart Energy Grid (GRID-09)</option>
+            <option value="hvac">Cleanroom HVAC (HVAC-12)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Upload File (.csv / .json / .txt)</label>
+          <input
+            type="file"
+            id="upload-file"
+            accept=".csv,.json,.txt"
+            class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl p-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+          />
+          <p class="text-[10px] text-slate-500 mt-1">Leave empty to generate a simulated 24-hour sensor batch.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Generated Data Format (if no file chosen)</label>
+          <select id="upload-format" class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none">
+            <option value="csv" selected>CSV Sensor File (e.g. temperature_2026-11-22.csv)</option>
+            <option value="json">JSON Telemetry Object (e.g. env_telemetry.json)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Description / Notes</label>
+          <input
+            type="text"
+            id="upload-desc"
+            placeholder="e.g. AgroSense LoRaWAN daily temperature log"
+            class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Tags</label>
+          <input
+            type="text"
+            id="upload-tags"
+            value="Sensor, Backup, AgroSense, Verified"
+            class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button
+            type="button"
+            onclick="closeUploadModal()"
+            class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btn-submit-upload"
+            class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+          >
+            Upload Backup
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: INLINE TELEMETRY & VERSION LINEAGE VIEWER (Matching User Images 2 & 3) -->
+  <div id="telemetry-viewer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="viewer-title" class="text-sm font-bold text-slate-900 font-mono">telemetry.json</h3>
+              <span id="viewer-tier-badge" class="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-200 text-slate-700">STANDARD</span>
+            </div>
+            <p id="viewer-sha256" class="text-[10px] text-slate-400 font-mono truncate max-w-lg">Checksum: Verified</p>
+          </div>
+        </div>
+        <button onclick="closeViewerModal()" class="text-slate-400 hover:text-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Two-column layout: Telemetry Payload + Version History) -->
+      <div class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+        <!-- Left: Formatted JSON / CSV Payload View -->
+        <div class="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-100 p-4 overflow-hidden bg-slate-50/30">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 shrink-0">
+            <span class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+              <i data-lucide="code" class="w-3.5 h-3.5 text-indigo-600"></i> Active Sensor Data
+            </span>
+            <span id="viewer-version-id" class="text-[10px] font-mono text-indigo-600 font-semibold">Latest Snapshot</span>
+          </div>
+          <pre id="viewer-json-content" class="flex-1 bg-white p-3 rounded-xl border border-slate-200 font-mono text-[11px] text-slate-800 overflow-auto select-all leading-relaxed shadow-2xs">Loading...</pre>
+        </div>
+
+        <!-- Right: Immutable Version Lineage & Restore Operation (Matching Images 2 & 3) -->
+        <div class="w-full lg:w-84 p-4 space-y-3 overflow-y-auto shrink-0 bg-white">
+          <div>
+            <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="history" class="w-3.5 h-3.5 text-indigo-600"></i>
+              Version History (Restore)
+            </h4>
+            <p class="text-[10px] text-slate-500">Non-destructive point-in-time recovery</p>
+          </div>
+
+          <div id="viewer-versions-list" class="space-y-2">
+            <!-- Dynamic version items rendered here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
+        <span class="text-[11px] text-emerald-700 font-medium flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Bit-level Cryptographic Integrity Confirmed
+        </span>
+        <button
+          onclick="closeViewerModal()"
+          class="px-4 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: SECURITY & OPERATIONS CENTER (Matching User Image 4: Lifecycle Policies) -->
+  <div id="admin-security-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-xl overflow-hidden">
+      <!-- Header -->
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Security & Operations Center</h3>
+            <p class="text-[11px] text-slate-500">Incident Alerts & Storage Lifecycle Management</p>
+          </div>
+        </div>
+        <button onclick="closeAdminSecurityModal()" class="text-slate-400 hover:text-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Metrics Row -->
+      <div class="grid grid-cols-3 gap-3 p-4 bg-slate-50 border-b border-slate-100 text-xs shrink-0">
+        <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+          <span class="text-[10px] text-slate-500 block uppercase tracking-wider font-semibold">Unresolved Incidents</span>
+          <span id="admin-stat-unread" class="font-mono font-bold text-base text-rose-600">0</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+          <span class="text-[10px] text-slate-500 block uppercase tracking-wider font-semibold">Active Encryption Key</span>
+          <span id="admin-stat-kms-ver" class="font-mono font-bold text-base text-indigo-600">{{ kms_status.current_version }} (Active)</span>
+        </div>
+        <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+          <span class="text-[10px] text-slate-500 block uppercase tracking-wider font-semibold">Object Storage Policy</span>
+          <span class="font-mono font-bold text-xs text-emerald-700">Versioning Enabled</span>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-5">
+        <!-- Encryption Key Rotation -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-600"></i>
+                Data Encryption Key Management
+              </h4>
+              <p class="text-[10px] text-slate-500 mt-0.5">Automated key rotation standard (AES-256-GCM)</p>
+            </div>
+            <button
+              id="btn-rotate-kms"
+              onclick="rotateKmsKey()"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition cursor-pointer"
+            >
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+              <span>Rotate Encryption Key</span>
+            </button>
+          </div>
+          <div id="kms-rotation-feedback" class="hidden p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono"></div>
+        </div>
+
+        <!-- Incident Alerts Stream -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-rose-600"></i>
+              Real-time Security Alerts
+            </h4>
+            <button
+              onclick="clearAllAlerts()"
+              class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+            >
+              Mark All Resolved
+            </button>
+          </div>
+
+          <div id="alerts-container" class="space-y-2.5">
+            <div class="p-6 text-center text-slate-400 text-xs">Loading incident alerts...</div>
+          </div>
+        </div>
+
+        <!-- Storage Lifecycle Management (Matching Image 4: HOT -> COOL -> ARCHIVE -> DELETION) -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">Storage Lifecycle Management Policies</h4>
+              <p class="text-[10px] text-slate-500">Automated cost optimization & compliance tiering</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                onclick="advanceLifecycle(30)"
+                class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 shadow-2xs transition cursor-pointer"
+              >
+                Advance 30 Days (Demo)
+              </button>
+              <a
+                href="/api/admin/audit/export-csv"
+                download
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition"
+              >
+                <i data-lucide="download" class="w-3 h-3"></i>
+                <span>Download CSV Audit</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Lifecycle Tiering Diagram (Matches User Image 4) -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
+            <div class="p-3 rounded-xl bg-white border border-orange-200 text-center shadow-2xs">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200 mb-1.5">🔥 HOT (Standard)</span>
+              <div class="text-[11px] font-mono font-semibold text-slate-800">Days 0 – 30</div>
+              <p class="text-[10px] text-slate-500 mt-1">Frequently accessed daily backups</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white border border-sky-200 text-center shadow-2xs">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 mb-1.5">❄️ COOL (IA)</span>
+              <div class="text-[11px] font-mono font-semibold text-slate-800">Days 31 – 90</div>
+              <p class="text-[10px] text-slate-500 mt-1">Infrequent access (40% cost saving)</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white border border-emerald-200 text-center shadow-2xs">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-1.5">📦 ARCHIVE (Glacier)</span>
+              <div class="text-[11px] font-mono font-semibold text-slate-800">Days 91 – 365</div>
+              <p class="text-[10px] text-slate-500 mt-1">Deep freeze compliance archive</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white border border-purple-200 text-center shadow-2xs">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 mb-1.5">🗑️ DELETION</span>
+              <div class="text-[11px] font-mono font-semibold text-slate-800">After 365 Days</div>
+              <p class="text-[10px] text-slate-500 mt-1">Auto-cleanup of noncurrent versions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-3 border-t border-slate-100 bg-white flex justify-end shrink-0">
+        <button
+          onclick="closeAdminSecurityModal()"
+          class="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: ACCESS RULES & ROLES MATRIX (Sir Deliverable: Access control screenshots) -->
+  <div id="permissions-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Role-Based Access Control (RBAC)</h3>
+            <p class="text-[11px] text-slate-500">Enforcing the Principle of Least Privilege</p>
+          </div>
+        </div>
+        <button onclick="closePermissionsModal()" class="text-slate-400 hover:text-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 text-[10px] text-slate-400 uppercase tracking-wider bg-slate-50/50">
+              <th class="py-2.5 px-3">Role</th>
+              <th class="py-2.5 px-3">Streams Allowed</th>
+              <th class="py-2.5 px-2 text-center">Read</th>
+              <th class="py-2.5 px-2 text-center">Upload</th>
+              <th class="py-2.5 px-2 text-center">Delete</th>
+              <th class="py-2.5 px-2 text-center">Restore</th>
+              <th class="py-2.5 px-2 text-center">Admin</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-[11px]">
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-indigo-700">BackupAdmin</td>
+              <td class="py-2.5 px-3 text-slate-600">All Streams</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+            </tr>
+            <tr class="bg-amber-50/30">
+              <td class="py-2.5 px-3 font-bold text-amber-700">Sensor Application</td>
+              <td class="py-2.5 px-3 text-slate-600">All Streams</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO (Restricted)</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-slate-700">Compliance Auditor</td>
+              <td class="py-2.5 px-3 text-slate-600">All Streams</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-emerald-700">Field Operations Tech</td>
+              <td class="py-2.5 px-3 text-slate-600">All Streams</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+            </tr>
+            <tr class="bg-rose-50/40">
+              <td class="py-2.5 px-3 font-bold text-rose-700">External Contractor</td>
+              <td class="py-2.5 px-3 text-rose-600 font-medium">Environmental Only</td>
+              <td class="py-2.5 px-2 text-center text-emerald-600 font-bold">YES</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+              <td class="py-2.5 px-2 text-center text-rose-600 font-bold">NO</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 leading-relaxed">
+        <b>Security Policy Note:</b> Sensor Applications are granted write access to ingest daily records but are strictly denied delete permissions. Any unauthorized deletion attempt triggers a 403 Forbidden denial and alerts the BackupAdmin.
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button
+          onclick="closePermissionsModal()"
+          class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    let currentFolder = 'all';
+    let currentUser = {{ current_user | tojson }};
+    let allDocuments = [];
+    let adminAlertInterval = null;
+    let lastUnreadCount = 0;
+
+    // Web Audio Chime on unauthorized access / violation
+    function playAlertChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch(e) {}
+    }
+
+    // Live Toast Notification
+    function showLiveToast(title, msg) {
+      const toast = document.getElementById("live-alert-toast");
+      if (!toast) return;
+      document.getElementById("live-toast-title").innerText = title || "Security Incident Detected";
+      document.getElementById("live-toast-msg").innerText = msg || "Unauthorized action was blocked by Least-Privilege access control.";
+      document.getElementById("live-toast-time").innerText = new Date().toLocaleTimeString();
+      toast.classList.remove("translate-x-full", "opacity-0");
+      toast.classList.add("translate-x-0", "opacity-100");
+      playAlertChime();
+      setTimeout(() => {
+        toast.classList.add("translate-x-full", "opacity-0");
+        toast.classList.remove("translate-x-0", "opacity-100");
+      }, 5000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      updateRoleVisibility();
+      loadDocuments();
+      if (currentUser && currentUser.group === "SecurityAdmin") {
+        loadAdminAlerts();
+        adminAlertInterval = setInterval(loadAdminAlerts, 2500);
+      }
+    });
+
+    function updateRoleVisibility() {
+      const isAdmin = (currentUser && currentUser.permissions && currentUser.permissions.is_admin);
+      const canUpload = (currentUser && currentUser.permissions && currentUser.permissions.can_upload);
+
+      // Admin Incident Bell Button
+      const bellBtn = document.getElementById("btn-admin-bell");
+      if (bellBtn) {
+        if (isAdmin) bellBtn.classList.remove("hidden");
+        else bellBtn.classList.add("hidden");
+      }
+
+      // Admin Security Center Button
+      const adminPanelBtn = document.getElementById("btn-admin-panel");
+      if (adminPanelBtn) {
+        if (isAdmin) {
+          adminPanelBtn.classList.remove("hidden");
+          adminPanelBtn.classList.add("sm:flex");
+        } else {
+          adminPanelBtn.classList.add("hidden");
+          adminPanelBtn.classList.remove("sm:flex");
+        }
+      }
+
+      // Sidebar Admin Incident Alerts Button
+      const sidebarAlertBtn = document.getElementById("btn-sidebar-admin-alerts");
+      if (sidebarAlertBtn) {
+        if (isAdmin) {
+          sidebarAlertBtn.classList.remove("hidden");
+          sidebarAlertBtn.classList.add("flex");
+        } else {
+          sidebarAlertBtn.classList.add("hidden");
+          sidebarAlertBtn.classList.remove("flex");
+        }
+      }
+
+      // Upload Buttons (Top + Table): ONLY visible to roles that can upload!
+      const topUploadBtn = document.getElementById("btn-top-upload");
+      if (topUploadBtn) {
+        if (canUpload) topUploadBtn.classList.remove("hidden");
+        else topUploadBtn.classList.add("hidden");
+      }
+
+      const tableUploadBtn = document.getElementById("btn-table-upload");
+      if (tableUploadBtn) {
+        if (canUpload) tableUploadBtn.classList.remove("hidden");
+        else tableUploadBtn.classList.add("hidden");
+      }
+
+      // Active Role Card in Sidebar
+      if (currentUser) {
+        const nameEl = document.getElementById("active-user-name");
+        if (nameEl) nameEl.innerText = currentUser.display_name;
+
+        const badgeEl = document.getElementById("active-user-badge");
+        if (badgeEl) {
+          badgeEl.innerText = currentUser.avatar_badge;
+          if (currentUser.username === 'contractor_guest') {
+            badgeEl.className = "px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 rounded-md";
+          } else if (currentUser.username === 'sensor_edge') {
+            badgeEl.className = "px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 rounded-md";
+          } else if (currentUser.username === 'compliance_auditor') {
+            badgeEl.className = "px-2 py-0.5 text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 rounded-md";
+          } else {
+            badgeEl.className = "px-2 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md";
+          }
+        }
+
+        const descEl = document.getElementById("active-user-role-label");
+        if (descEl) descEl.innerText = currentUser.description || "";
+
+        const selectEl = document.getElementById("user-role-select");
+        if (selectEl && selectEl.value !== currentUser.username) {
+          selectEl.value = currentUser.username;
+        }
+      }
+    }
+
+    async function switchRole(username) {
+      try {
+        const resp = await fetch("/api/auth/switch-user", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({username})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          currentUser = data.user;
+          updateRoleVisibility();
+          loadDocuments();
+          if (adminAlertInterval) {
+            clearInterval(adminAlertInterval);
+            adminAlertInterval = null;
+          }
+          if (currentUser.group === "SecurityAdmin") {
+            loadAdminAlerts();
+            adminAlertInterval = setInterval(loadAdminAlerts, 2500);
+          }
+        }
+      } catch (err) {
+        console.error("Error switching role:", err);
+      }
+    }
+
+    function selectFolder(dept) {
+      currentFolder = dept;
+      document.querySelectorAll(".folder-nav-btn").forEach(btn => {
+        btn.classList.remove("bg-indigo-50", "text-indigo-700");
+        btn.classList.add("text-slate-600");
+      });
+      const activeBtn = document.getElementById(`folder-${dept}`);
+      if (activeBtn) {
+        activeBtn.classList.remove("text-slate-600");
+        activeBtn.classList.add("bg-indigo-50", "text-indigo-700");
+      }
+
+      const titles = {
+        all: "All Sensor Backups",
+        env: "Environmental Station",
+        turbine: "Wind Turbines",
+        grid: "Smart Energy Grid",
+        hvac: "Cleanroom HVAC"
+      };
+      const descs = {
+        all: "Viewing historical sensor backups with object versioning and recovery.",
+        env: "Meteorological, air quality, ambient temperature, humidity, and UV solar records.",
+        turbine: "Industrial rotary vibration, bearing temperatures, generator RPM, and output kW.",
+        grid: "High-voltage distribution telemetry, phase angle, active power factor, and line frequency.",
+        hvac: "Precision cleanroom chilled water circuits, airflow static pressure, and compressor load."
+      };
+      document.getElementById("current-folder-title").innerText = titles[dept] || "Sensor Backups";
+      document.getElementById("current-folder-desc").innerText = descs[dept] || "";
+
+      loadDocuments();
+    }
+
+    let searchTimer = null;
+    function handleSearch(val) {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        loadDocuments(val);
+      }, 200);
+    }
+
+    async function loadDocuments(query = "") {
+      const tbody = document.getElementById("documents-tbody");
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Loading sensor backups...</td></tr>`;
+
+      try {
+        const resp = await fetch(`/api/documents?dept=${currentFolder}&q=${encodeURIComponent(query)}`);
+        const data = await resp.json();
+
+        if (!data.success) {
+          showAccessDeniedModal(currentFolder);
+          document.getElementById("total-docs-count").innerText = "Access Blocked (403)";
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center py-12 px-4">
+                <div class="max-w-md mx-auto space-y-3">
+                  <div class="h-12 w-12 mx-auto rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                    <i data-lucide="shield-x" class="w-6 h-6"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Access Restricted by IAM Policy</h3>
+                    <p class="text-xs text-slate-500 mt-1">${data.reason || "Your role lacks permission to browse documents in this stream. Incident logged."}</p>
+                  </div>
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 text-rose-700 text-[11px] font-semibold border border-rose-200">
+                    <i data-lucide="bell" class="w-3.5 h-3.5"></i> Incident Reported to BackupAdmin
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        allDocuments = data.documents;
+        document.getElementById("total-docs-count").innerText = `${allDocuments.length} Backup(s)`;
+
+        // Update Top Dashboard Overview Counters
+        const totalFilesEl = document.getElementById("stat-total-files");
+        if (totalFilesEl) totalFilesEl.innerText = `${allDocuments.length} Files`;
+        const totalVersions = allDocuments.reduce((acc, d) => acc + (d.versions_count || 1), 0);
+        const totalVersionsEl = document.getElementById("stat-total-versions");
+        if (totalVersionsEl) totalVersionsEl.innerText = `${totalVersions} Versions`;
+
+        if (data.counts) {
+          updateFolderCountsFromData(data.counts);
+        }
+
+        if (allDocuments.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">No sensor backups found in this category.</td></tr>`;
+          return;
+        }
+
+        let html = "";
+        allDocuments.forEach(doc => {
+          const deptBadges = {
+            env: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            turbine: "bg-sky-50 text-sky-700 border-sky-200",
+            grid: "bg-amber-50 text-amber-700 border-amber-200",
+            hvac: "bg-indigo-50 text-indigo-700 border-indigo-200"
+          };
+          const deptNames = {
+            env: "ENVIRONMENTAL",
+            turbine: "TURBINE",
+            grid: "SMART GRID",
+            hvac: "HVAC"
+          };
+          const deptClass = deptBadges[doc.department] || deptBadges.env;
+          const deptLabel = deptNames[doc.department] || doc.department.toUpperCase();
+          const sizeKb = (doc.size_bytes / 1024).toFixed(1) + " KB";
+          const dateStr = doc.uploaded_at ? doc.uploaded_at.split(" ")[0] : "Recent";
+          const lockIcon = !doc.user_can_read ? `<i data-lucide="lock" class="w-3.5 h-3.5 text-rose-500 inline ml-1.5" title="Access restricted for current role"></i>` : '';
+          const isCsv = doc.filename.endsWith('.csv');
+
+          html += `
+            <tr class="hover:bg-slate-50/80 transition">
+              <td class="py-3.5 px-5">
+                <div class="flex items-center space-x-3">
+                  <div class="h-8 w-8 rounded-lg ${doc.user_can_read ? (isCsv ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600') : 'bg-slate-100 text-slate-400'} flex items-center justify-center shrink-0">
+                    <i data-lucide="${doc.user_can_read ? (isCsv ? 'file-spreadsheet' : 'file-text') : 'lock'}" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <span class="font-semibold ${doc.user_can_read ? 'text-slate-900 hover:text-indigo-600' : 'text-slate-500'} block cursor-pointer" onclick="handleFileClick('${doc.department}', '${doc.object_id}', '${doc.filename}', ${doc.user_can_read})">
+                      ${doc.filename} ${lockIcon}
+                    </span>
+                    <span class="text-[11px] text-slate-400 block">${doc.description || 'IoT Daily Telemetry Backup'}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${deptClass}">${deptLabel}</span>
+              </td>
+              <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px] whitespace-nowrap">${dateStr}</td>
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                <div class="flex items-center gap-1.5 font-mono text-[11px]">
+                  <span class="text-slate-600 font-semibold whitespace-nowrap">${sizeKb}</span>
+                  <span class="text-[10px] text-indigo-600 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded whitespace-nowrap">${doc.versions_count || 1} versions</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-5 text-right space-x-1.5 whitespace-nowrap">
+                ${doc.user_can_read ? `
+                  <button onclick="handleFileClick('${doc.department}', '${doc.object_id}', '${doc.filename}', true)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+                    View
+                  </button>
+                  <button onclick="handleDownload('${doc.department}', '${doc.object_id}', '${doc.filename}', true)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+                    Download
+                  </button>
+                ` : `
+                  <button onclick="handleFileClick('${doc.department}', '${doc.object_id}', '${doc.filename}', false)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer inline-flex items-center gap-1">
+                    <i data-lucide="lock" class="w-3 h-3"></i>
+                    <span>Restricted</span>
+                  </button>
+                `}
+                ${doc.user_can_delete ? `
+                  <button onclick="handleDelete('${doc.department}', '${doc.object_id}')" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer">
+                    Delete
+                  </button>
+                ` : ''}
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-rose-500">Error connecting to storage</td></tr>`;
+      }
+    }
+
+    function updateFolderCountsFromData(counts) {
+      if (!counts) return;
+      document.getElementById("count-all").innerText = counts.all || 0;
+      document.getElementById("count-env").innerText = counts.env || 0;
+      document.getElementById("count-turbine").innerText = counts.turbine || 0;
+      document.getElementById("count-grid").innerText = counts.grid || 0;
+      document.getElementById("count-hvac").innerText = counts.hvac || 0;
+    }
+
+    function reportViolation(dept, docId, filename, action) {
+      fetch("/api/security/report-violation", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          folder: dept,
+          resource: `sensors/${dept}/${filename || docId}`,
+          action: action,
+          reason: `Unauthorized ${action} attempted on ${dept} sensor stream by ${currentUser.display_name}.`
+        })
+      }).then(r => r.json()).then(data => {
+        if (currentUser && currentUser.group === "SecurityAdmin") {
+          loadAdminAlerts();
+        }
+      }).catch(() => {});
+    }
+
+    async function handleFileClick(dept, docId, filename, canRead) {
+      if (!canRead) {
+        reportViolation(dept, docId, filename, "View");
+        showAccessDeniedModal(dept);
+        return;
+      }
+
+      try {
+        const resp = await fetch(`/api/documents/view/${dept}/${docId}`);
+        const data = await resp.json();
+        if (!data.success) {
+          alert("Error opening file: " + data.error);
+          return;
+        }
+
+        document.getElementById("viewer-title").innerText = data.filename;
+        document.getElementById("viewer-tier-badge").innerText = data.storage_class;
+        document.getElementById("viewer-sha256").innerText = `Checksum: ${data.sha256.substring(0, 24)}...`;
+        document.getElementById("viewer-version-id").innerText = `Active Version: ${data.version_id.substring(0, 16)}...`;
+
+        let contentFormatted = data.content;
+        if (data.filename.endsWith(".json")) {
+          try {
+            const parsed = JSON.parse(data.content);
+            contentFormatted = JSON.stringify(parsed, null, 2);
+          } catch(e) {}
+        }
+        document.getElementById("viewer-json-content").innerText = contentFormatted;
+
+        // Render Version History Lineage matching User Images 2 & 3 (Current version badge + Restore button)
+        const canRestore = (currentUser && currentUser.permissions && currentUser.permissions.can_restore);
+        const vList = document.getElementById("viewer-versions-list");
+        if (!data.versions || data.versions.length === 0) {
+          vList.innerHTML = `<div class="text-[11px] text-slate-400">Single active version.</div>`;
+        } else {
+          let vHtml = "";
+          data.versions.forEach((v, idx) => {
+            const isLatest = (idx === 0);
+            const vDate = v.created_at ? v.created_at.replace('T', ' ').substring(0, 19) : 'Recorded';
+            const vSize = v.size_bytes ? (v.size_bytes / 1024).toFixed(1) + " KB" : "1.2 KB";
+            vHtml += `
+              <div class="p-3 rounded-xl border ${isLatest ? 'bg-indigo-50/50 border-indigo-200' : 'bg-slate-50 border-slate-200'} text-xs space-y-1.5 transition">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full ${isLatest ? 'bg-indigo-600' : 'bg-slate-300'}"></span>
+                    <span class="font-mono font-bold ${isLatest ? 'text-indigo-700' : 'text-slate-800'} text-[11px]">${v.version_id.substring(0, 16)}...</span>
+                  </div>
+                  <span class="text-slate-500 font-mono text-[10px]">${vSize}</span>
+                </div>
+                <div class="text-slate-500 text-[10px] pl-3.5 font-mono">${vDate}</div>
+                <div class="flex items-center justify-between pt-1 pl-3.5">
+                  ${isLatest ? `
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white">Current version</span>
+                  ` : (canRestore ? `
+                    <button
+                      onclick="handleRestore('${dept}', '${data.key}', '${v.version_id}')"
+                      class="px-3 py-1 text-[11px] font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition cursor-pointer shadow-2xs"
+                    >
+                      Restore
+                    </button>
+                  ` : `
+                    <span class="text-[10px] text-slate-400 italic">Historical Snapshot</span>
+                  `)}
+                  <button
+                    onclick="window.location.href='/api/documents/download/${dept}/${data.key}?version_id=${v.version_id}'"
+                    class="p-1 rounded text-slate-500 hover:text-slate-900 transition"
+                    title="Download this specific version"
+                  >
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          vList.innerHTML = vHtml;
+        }
+
+        const modal = document.getElementById("telemetry-viewer-modal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        lucide.createIcons();
+      } catch (err) {
+        alert("Error viewing backup: " + err);
+      }
+    }
+
+    function closeViewerModal() {
+      const modal = document.getElementById("telemetry-viewer-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function handleDownload(dept, docId, filename, canRead) {
+      if (!canRead) {
+        reportViolation(dept, docId, filename, "Download");
+        showAccessDeniedModal(dept);
+        return;
+      }
+      window.location.href = `/api/documents/download/${dept}/${docId}`;
+    }
+
+    async function handleRestore(dept, docId, versionId) {
+      if (!confirm(`Restore snapshot ${versionId}? This will recover historical data non-destructively.`)) return;
+      try {
+        const resp = await fetch(`/api/documents/restore/${dept}/${docId}`, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({version_id: versionId})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert(`Backup restored successfully to active state!`);
+          closeViewerModal();
+          loadDocuments();
+        } else {
+          alert("Restore rejected: " + data.error);
+        }
+      } catch (err) {
+        alert("Error restoring: " + err);
+      }
+    }
+
+    function showAccessDeniedModal(dept) {
+      const deptNames = {
+        env: "Environmental Station",
+        turbine: "Wind Turbines",
+        grid: "Smart Energy Grid",
+        hvac: "Cleanroom HVAC"
+      };
+      document.getElementById("denied-current-role").innerText = currentUser.display_name || currentUser.username;
+      document.getElementById("denied-target-dept").innerText = deptNames[dept] || dept;
+      document.getElementById("denied-modal-text").innerText = `Access Denied: Role '${currentUser.display_name}' lacks IAM permission to access '${deptNames[dept] || dept}' storage under Least-Privilege policy.`;
+
+      const modal = document.getElementById("access-denied-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      playAlertChime();
+      lucide.createIcons();
+    }
+
+    function closeDeniedModal() {
+      const modal = document.getElementById("access-denied-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // --- Admin Security Center Logic ---
+
+    async function loadAdminAlerts() {
+      if (!currentUser || currentUser.group !== "SecurityAdmin") return;
+      try {
+        const resp = await fetch("/api/admin/alerts");
+        const data = await resp.json();
+        const unread = data.unread_count || 0;
+        const badge = document.getElementById("bell-badge");
+
+        if (unread > 0) {
+          badge.innerText = unread;
+          badge.classList.remove("hidden");
+          badge.classList.add("flex");
+        } else {
+          badge.classList.add("hidden");
+          badge.classList.remove("flex");
+        }
+
+        if (unread > lastUnreadCount) {
+          const newest = (data.alerts && data.alerts.length > 0) ? data.alerts[0] : null;
+          if (newest && lastUnreadCount >= 0) {
+            showLiveToast(newest.title, newest.reason || newest.resource);
+          }
+        }
+        lastUnreadCount = unread;
+
+        document.getElementById("admin-stat-unread").innerText = unread;
+        if (data.kms_status) {
+          document.getElementById("admin-stat-kms-ver").innerText = `${data.kms_status.current_version} (${data.kms_status.key_state})`;
+        }
+
+        const container = document.getElementById("alerts-container");
+        if (!data.alerts || data.alerts.length === 0) {
+          container.innerHTML = `<div class="p-6 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-center text-xs">No active security alerts. Zero violations detected.</div>`;
+          return;
+        }
+
+        let html = "";
+        data.alerts.forEach(a => {
+          const isResolved = a.acknowledged;
+          html += `
+            <div class="p-3.5 rounded-xl border ${isResolved ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-rose-50/70 border-rose-200'} text-xs space-y-2 transition shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="font-bold ${isResolved ? 'text-slate-500' : 'text-rose-700'} flex items-center gap-1.5">
+                  <i data-lucide="${isResolved ? 'check-circle-2' : 'alert-triangle'}" class="w-3.5 h-3.5 ${isResolved ? 'text-slate-400' : 'text-rose-500'}"></i>
+                  ${a.title}
+                </span>
+                <span class="text-[10px] text-slate-400 font-mono">${a.timestamp}</span>
+              </div>
+              ${a.reason ? `<p class="text-[11px] text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 leading-relaxed">${a.reason}</p>` : ''}
+              <p class="text-[11px] text-slate-500">
+                <b>User:</b> ${a.user_display_name} &bull; <b>Target:</b> <span class="font-mono text-indigo-600">${a.resource}</span> &bull; <b>Origin IP:</b> ${a.source_ip}
+              </p>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                  <i data-lucide="send" class="w-3 h-3"></i> ${a.webhook_status || 'Dispatched to CloudWatch'}
+                </span>
+                ${!isResolved ? `
+                  <button onclick="acknowledgeAlert('${a.alert_id}')" class="px-2.5 py-1 text-[10px] font-semibold rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-2xs cursor-pointer">
+                    Acknowledge
+                  </button>
+                ` : `
+                  <span class="text-[10px] text-slate-400 font-medium">Resolved</span>
+                `}
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading admin alerts:", err);
+      }
+    }
+
+    async function acknowledgeAlert(alertId) {
+      try {
+        const resp = await fetch("/api/admin/alerts/acknowledge", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({alert_id: alertId})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          loadAdminAlerts();
+        }
+      } catch (err) {
+        console.error("Error acknowledging alert:", err);
+      }
+    }
+
+    async function clearAllAlerts() {
+      try {
+        const resp = await fetch("/api/admin/alerts/clear-all", {method: "POST"});
+        const data = await resp.json();
+        if (data.success) {
+          loadAdminAlerts();
+        }
+      } catch (err) {
+        console.error("Error clearing alerts:", err);
+      }
+    }
+
+    async function rotateKmsKey() {
+      const btn = document.getElementById("btn-rotate-kms");
+      btn.disabled = true;
+      btn.innerText = "Rotating...";
+
+      try {
+        const resp = await fetch("/api/admin/kms/rotate", {method: "POST"});
+        const data = await resp.json();
+        if (data.success) {
+          const r = data.report;
+          const box = document.getElementById("kms-rotation-feedback");
+          box.innerHTML = `<b>Success!</b> Encryption key rotated to version <b>${r.key_version}</b> at ${r.rotated_at}. Compliance verified.`;
+          box.classList.remove("hidden");
+          loadAdminAlerts();
+        } else {
+          alert("Key rotation failed: " + data.error);
+        }
+      } catch (err) {
+        alert("Error during key rotation: " + err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3"></i><span>Rotate Encryption Key</span>`;
+        lucide.createIcons();
+      }
+    }
+
+    function openAdminSecurityModal() {
+      if (!currentUser || currentUser.group !== "SecurityAdmin") {
+        alert("Access Restricted: Only BackupAdmin has access to the Security & Operations Center.");
+        return;
+      }
+      loadAdminAlerts();
+      const modal = document.getElementById("admin-security-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeAdminSecurityModal() {
+      const modal = document.getElementById("admin-security-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    async function advanceLifecycle(days) {
+      try {
+        const resp = await fetch("/api/lifecycle/advance", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({days: days})
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert(`Advanced simulation by ${days} days. Total elapsed: ${data.total_days} days. Storage class transitions evaluated.`);
+          loadDocuments();
+        }
+      } catch (err) {
+        alert("Error advancing lifecycle: " + err);
+      }
+    }
+
+    // --- Upload & Permissions Modal Logic ---
+
+    function openUploadModal() {
+      document.getElementById("upload-error-msg").classList.add("hidden");
+      document.getElementById("upload-modal").classList.remove("hidden");
+      document.getElementById("upload-modal").classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeUploadModal() {
+      const modal = document.getElementById("upload-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    async function submitUpload(e) {
+      e.preventDefault();
+      const form = document.getElementById("upload-form");
+      const fileInput = document.getElementById("upload-file");
+
+      const formData = new FormData();
+      if (fileInput.files && fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+      }
+      formData.append("department", document.getElementById("upload-dept").value);
+      formData.append("format", document.getElementById("upload-format").value);
+      formData.append("description", document.getElementById("upload-desc").value);
+      formData.append("tags", document.getElementById("upload-tags").value);
+
+      const btn = document.getElementById("btn-submit-upload");
+      btn.disabled = true;
+      btn.innerText = "Uploading...";
+
+      try {
+        const resp = await fetch("/api/documents/upload", {
+          method: "POST",
+          body: formData
+        });
+        const data = await resp.json();
+
+        if (data.success) {
+          closeUploadModal();
+          form.reset();
+          loadDocuments();
+        } else {
+          const errBox = document.getElementById("upload-error-msg");
+          errBox.innerText = data.reason || data.error || "Upload failed. Your role may lack upload permission in this stream.";
+          errBox.classList.remove("hidden");
+        }
+      } catch (err) {
+        const errBox = document.getElementById("upload-error-msg");
+        errBox.innerText = "Error during upload: " + err;
+        errBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Upload Backup";
+      }
+    }
+
+    async function handleDelete(dept, docId) {
+      if (!confirm("Are you sure you want to delete this sensor backup?")) return;
+      try {
+        const resp = await fetch(`/api/documents/delete/${dept}/${docId}`, {method: "DELETE"});
+        const data = await resp.json();
+        if (data.success) {
+          loadDocuments();
+        } else {
+          showLiveToast("Unauthorized Delete Blocked", data.error || "Least-Privilege Policy Denies Delete for this Role.");
+          alert("Delete failed: " + (data.error || "Permission denied under Least-Privilege access policy."));
+        }
+      } catch (err) {
+        alert("Delete failed: " + err);
+      }
+    }
+
+    function openPermissionsModal() {
+      const modal = document.getElementById("permissions-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closePermissionsModal() {
+      const modal = document.getElementById("permissions-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+  </script>
+</body>
+</html>

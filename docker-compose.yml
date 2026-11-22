@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  iot-backup-gateway:
+    build: .
+    container_name: iot-backup-cloud-gateway
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - STORAGE_PROVIDER=LOCAL_S3_SIMULATOR
+      - S3_BUCKET_NAME=iot-secure-telemetry-vault
+      - FLASK_ENV=production
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

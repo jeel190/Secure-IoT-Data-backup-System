@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Backup Catalog - IoT Backup Vault{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header & Action Bar -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Backup Storage Catalog</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Manage and inspect stored daily telemetry archives and version histories.</p>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <input type="text" id="backupSearchInput" onkeyup="filterBackupsTable()" placeholder="Search backups..." class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full sm:w-56">
+            <button onclick="triggerDailyBackup()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 whitespace-nowrap active:scale-95 transition-all">
+                <i class="fa-solid fa-plus text-xs"></i> Create Backup
+            </button>
+        </div>
+    </div>
+
+    <!-- Backup Catalog Table -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="p-3 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>{{ backups|length }} backup records</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse" id="backupsCatalogTable">
+                <thead>
+                    <tr class="border-b border-slate-800 text-slate-400 font-mono text-[11px]">
+                        <th class="py-3 px-4">Backup Name</th>
+                        <th class="py-3 px-3">Versions</th>
+                        <th class="py-3 px-3">Size</th>
+                        <th class="py-3 px-3">Storage Tier</th>
+                        <th class="py-3 px-3">Created By</th>
+                        <th class="py-3 px-4">SHA-256 Checksum</th>
+                        <th class="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-200">
+                    {% for b in backups %}
+                    <tr class="hover:bg-slate-800/40 transition-colors backup-row">
+                        <td class="py-3.5 px-4 font-mono text-sky-300">
+                            <span class="backup-key font-medium">{{ b.key }}</span>
+                            <div class="text-[10px] text-slate-500 mt-0.5">Modified: {{ b.last_modified }}</div>
+                        </td>
+                        <td class="py-3.5 px-3">
+                            <a href="/versions/{{ b.key }}" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-colors">
+                                {{ b.total_versions }} versions
+                            </a>
+                        </td>
+                        <td class="py-3.5 px-3 font-mono text-slate-300">{{ b.size_kb }} KB</td>
+                        <td class="py-3.5 px-3">
+                            {% if b.storage_class == 'STANDARD' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] bg-sky-950 text-sky-300 border border-sky-800">Standard</span>
+                            {% elif b.storage_class == 'STANDARD_IA' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-800">Infrequent</span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded text-[10px] bg-purple-950 text-purple-300 border border-purple-800">Glacier</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-3 font-mono text-slate-300">{{ b.uploaded_by }}</td>
+                        <td class="py-3.5 px-4 font-mono text-slate-400 text-[11px]" title="{{ b.sha256 }}">
+                            <span class="backup-hash">{{ b.sha256[:10] }}...{{ b.sha256[-8:] }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                            <a href="/versions/{{ b.key }}" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-slate-700 inline-flex items-center gap-1">
+                                Versions
+                            </a>
+                            <button onclick="verifyIntegrity('{{ b.key }}', '{{ b.latest_version_id }}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded text-xs font-medium border border-slate-700 inline-flex items-center gap-1">
+                                Verify
+                            </button>
+                            <button onclick="downloadPresigned('{{ b.key }}', '{{ b.latest_version_id }}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded text-xs font-medium border border-slate-700 inline-flex items-center gap-1">
+                                Download
+                            </button>
+                            <button onclick="deleteBackup('{{ b.key }}')" class="px-2 py-1 bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-300 rounded text-xs border border-slate-700" title="Delete backup">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-500">No backups found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function filterBackupsTable() {
+    const q = document.getElementById('backupSearchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('.backup-row');
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

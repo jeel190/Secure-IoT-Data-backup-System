@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Live Telemetry - IoT Backup Vault{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Live Sensor Telemetry</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Real-time edge device monitoring and ambient meteorological stream.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="autoPollToggle" onclick="toggleAutoPolling()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-2">
+                <span id="pollPulse" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span id="pollBtnText">Streaming Live (3s)</span>
+            </button>
+            <button onclick="triggerDailyBackup()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 active:scale-95 transition-all">
+                <i class="fa-solid fa-cloud-arrow-up text-xs"></i> Snapshot Batch
+            </button>
+        </div>
+    </div>
+
+    <!-- Ambient Meteorological Station Banner -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-cloud-sun text-sky-400 text-sm"></i>
+                <h3 class="font-semibold text-white text-xs">Ambient Meteorological Station</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-950 text-emerald-300 border border-emerald-800">
+                Live Feed
+            </span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                <span class="text-slate-400 text-[10px]">TEMPERATURE</span>
+                <div class="text-lg font-bold text-white mt-1" id="pubTemp">{{ live_weather.live_readings.temperature_c }} °C</div>
+                <div class="text-[10px] text-slate-500">Surface level</div>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                <span class="text-slate-400 text-[10px]">HUMIDITY</span>
+                <div class="text-lg font-bold text-sky-400 mt-1" id="pubHum">{{ live_weather.live_readings.relative_humidity_pct }} %</div>
+                <div class="text-[10px] text-slate-500">Relative humidity</div>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                <span class="text-slate-400 text-[10px]">PRESSURE</span>
+                <div class="text-lg font-bold text-amber-400 mt-1" id="pubPress">{{ live_weather.live_readings.surface_pressure_hpa }} hPa</div>
+                <div class="text-[10px] text-slate-500">Barometric level</div>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800/80">
+                <span class="text-slate-400 text-[10px]">WIND SPEED</span>
+                <div class="text-lg font-bold text-indigo-400 mt-1" id="pubWind">{{ live_weather.live_readings.wind_speed_kmh }} km/h</div>
+                <div class="text-[10px] text-slate-500">10m elevation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 IoT Edge Devices Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="edgeDevicesContainer">
+        <!-- Device 1: ENV-STATION-01 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div>
+                    <h4 class="font-semibold text-white text-xs">ENV-STATION-01</h4>
+                    <p class="text-[11px] text-slate-400">Weather Mast &bull; Air Quality</p>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[9px] font-bold">ONLINE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-xs font-mono" id="metrics-ENV-STATION-01">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">TEMP</span>
+                    <div class="text-sm font-bold text-white val-temp">28.4 °C</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">HUMIDITY</span>
+                    <div class="text-sm font-bold text-sky-400 val-hum">62 %</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">PM2.5</span>
+                    <div class="text-sm font-bold text-amber-400 val-pm25">34 ug/m3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 2: TURBINE-EDGE-04 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div>
+                    <h4 class="font-semibold text-white text-xs">TURBINE-EDGE-04</h4>
+                    <p class="text-[11px] text-slate-400">Generator Hall 2 &bull; Wind Turbine Unit 4</p>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[9px] font-bold">ONLINE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-xs font-mono" id="metrics-TURBINE-EDGE-04">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">VIBRATION</span>
+                    <div class="text-sm font-bold text-white val-vib">1.84 mm/s</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">BEARING</span>
+                    <div class="text-sm font-bold text-rose-400 val-btemp">68.2 °C</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">RPM</span>
+                    <div class="text-sm font-bold text-emerald-400 val-rpm">1495</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 3: SMART-METER-09 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div>
+                    <h4 class="font-semibold text-white text-xs">SMART-METER-09</h4>
+                    <p class="text-[11px] text-slate-400">Substation 3B &bull; Smart Grid Node</p>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[9px] font-bold">ONLINE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-xs font-mono" id="metrics-SMART-METER-09">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">VOLTAGE</span>
+                    <div class="text-sm font-bold text-white val-volt">234.2 V</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">CURRENT</span>
+                    <div class="text-sm font-bold text-sky-400 val-curr">28.4 A</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">POWER</span>
+                    <div class="text-sm font-bold text-amber-400 val-pow">6.65 kW</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device 4: FACTORY-HVAC-12 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div>
+                    <h4 class="font-semibold text-white text-xs">FACTORY-HVAC-12</h4>
+                    <p class="text-[11px] text-slate-400">Cleanroom 1 &bull; Chiller Plant</p>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[9px] font-bold">ONLINE</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-xs font-mono" id="metrics-FACTORY-HVAC-12">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">CHILLED WTR</span>
+                    <div class="text-sm font-bold text-white val-cw">6.8 °C</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">AIRFLOW</span>
+                    <div class="text-sm font-bold text-sky-400 val-air">3450 CFM</div>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800/80">
+                    <span class="text-slate-500 text-[10px]">LOAD</span>
+                    <div class="text-sm font-bold text-purple-400 val-load">74 %</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Telemetry Inspector -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="font-semibold text-white text-xs">Live Telemetry Batch Inspector</h3>
+            <span class="text-[10px] font-mono text-slate-400">Raw JSON Stream</span>
+        </div>
+        <pre id="liveJsonInspector" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto max-h-56">
+Loading stream...
+        </pre>
+    </div>
+
+</div>
+
+<script>
+let pollingActive = true;
+let pollInterval = null;
+
+function fetchLiveTelemetry() {
+    fetch('/api/sensor/live')
+    .then(r => r.json())
+    .then(data => {
+        if(data.public_weather_feed && data.public_weather_feed.live_readings) {
+            const w = data.public_weather_feed.live_readings;
+            document.getElementById('pubTemp').innerText = w.temperature_c + ' °C';
+            document.getElementById('pubHum').innerText = w.relative_humidity_pct + ' %';
+            document.getElementById('pubPress').innerText = w.surface_pressure_hpa + ' hPa';
+            document.getElementById('pubWind').innerText = w.wind_speed_kmh + ' km/h';
+        }
+
+        document.getElementById('liveJsonInspector').innerText = JSON.stringify(data, null, 2);
+
+        const dt = data.device_telemetry;
+        if (dt['ENV-STATION-01']) {
+            const m = dt['ENV-STATION-01'].data;
+            const el = document.getElementById('metrics-ENV-STATION-01');
+            el.querySelector('.val-temp').innerText = m.temperature_c + ' °C';
+            el.querySelector('.val-hum').innerText = m.humidity_pct + ' %';
+            el.querySelector('.val-pm25').innerText = m.pm25_ug_m3 + ' ug/m3';
+        }
+        if (dt['TURBINE-EDGE-04']) {
+            const m = dt['TURBINE-EDGE-04'].data;
+            const el = document.getElementById('metrics-TURBINE-EDGE-04');
+            el.querySelector('.val-vib').innerText = m.vibration_mms + ' mm/s';
+            el.querySelector('.val-btemp').innerText = m.bearing_temp_c + ' °C';
+            el.querySelector('.val-rpm').innerText = m.rpm;
+        }
+        if (dt['SMART-METER-09']) {
+            const m = dt['SMART-METER-09'].data;
+            const el = document.getElementById('metrics-SMART-METER-09');
+            el.querySelector('.val-volt').innerText = m.voltage_v + ' V';
+            el.querySelector('.val-curr').innerText = m.current_a + ' A';
+            el.querySelector('.val-pow').innerText = m.active_power_kw + ' kW';
+        }
+        if (dt['FACTORY-HVAC-12']) {
+            const m = dt['FACTORY-HVAC-12'].data;
+            const el = document.getElementById('metrics-FACTORY-HVAC-12');
+            el.querySelector('.val-cw').innerText = m.chilled_water_temp_c + ' °C';
+            el.querySelector('.val-air').innerText = m.airflow_cfm + ' CFM';
+            el.querySelector('.val-load').innerText = m.compressor_load_pct + ' %';
+        }
+    });
+}
+
+function toggleAutoPolling() {
+    pollingActive = !pollingActive;
+    const pulse = document.getElementById('pollPulse');
+    const text = document.getElementById('pollBtnText');
+    if (pollingActive) {
+        pollInterval = setInterval(fetchLiveTelemetry, 3000);
+        pulse.classList.remove('hidden');
+        text.innerText = "Streaming Live (3s)";
+    } else {
+        clearInterval(pollInterval);
+        pulse.classList.add('hidden');
+        text.innerText = "Stream Paused";
+    }
+}
+
+pollInterval = setInterval(fetchLiveTelemetry, 3000);
+fetchLiveTelemetry();
+</script>
+{% endblock %}

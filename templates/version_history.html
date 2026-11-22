@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Version History - IoT Backup Vault{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Top Navigation -->
+    <div class="flex items-center justify-between">
+        <a href="/backups" class="text-xs text-sky-400 hover:underline flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left text-[11px]"></i>
+            <span>Back to Backups</span>
+        </a>
+    </div>
+
+    <!-- Object Header -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs text-slate-400 uppercase tracking-wider font-medium">Backup Archive</span>
+                <h1 class="text-lg sm:text-xl font-mono font-bold text-white mt-0.5 break-all">
+                    {{ key }}
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">
+                    {{ versions_data.versions|length }} recorded point-in-time snapshots
+                </p>
+            </div>
+            <button onclick="uploadNewVersion('{{ key }}')" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 active:scale-95 transition-all">
+                <i class="fa-solid fa-upload text-xs"></i> New Version
+            </button>
+        </div>
+    </div>
+
+    <!-- Versions Timeline Cards -->
+    <div class="space-y-3">
+        {% for v in versions_data.versions %}
+        <div class="bg-slate-900 border {% if v.is_latest %}border-emerald-500/40{% else %}border-slate-800{% endif %} rounded-xl p-4 shadow-sm transition-all">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-2.5 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-md {% if v.is_latest %}bg-emerald-500/20 text-emerald-400{% else %}bg-slate-800 text-slate-400{% endif %} flex items-center justify-center font-bold text-xs">
+                        {% if v.is_latest %}&#10003;{% else %}v{{ loop.revindex }}{% endif %}
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-xs font-bold text-white">{{ v.version_id }}</span>
+                            {% if v.is_latest %}
+                            <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800">Latest (Active)</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">
+                            Created: {{ v.created_at }} &bull; Age: {{ v.age_days|default(0) }} days
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges -->
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-950 text-slate-300 border border-slate-800">
+                        {{ v.size_kb }} KB
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[11px] font-mono {% if v.storage_class == 'STANDARD' %}bg-sky-950 text-sky-300 border border-sky-800{% elif v.storage_class == 'STANDARD_IA' %}bg-amber-950 text-amber-300 border border-amber-800{% else %}bg-purple-950 text-purple-300 border border-purple-800{% endif %}">
+                        {{ v.storage_class }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-950 text-slate-300 border border-slate-800">
+                        Role: {{ v.uploaded_by_role }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Checksum & Details -->
+            <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80 text-xs font-mono mb-3">
+                <span class="text-slate-500 text-[10px] uppercase block">SHA-256 Checksum</span>
+                <span class="text-sky-300 break-all select-all">{{ v.sha256 }}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2">
+                    <button onclick="verifyIntegrity('{{ key }}', '{{ v.version_id }}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded font-medium border border-slate-700 flex items-center gap-1">
+                        Verify Integrity
+                    </button>
+                    <button onclick="downloadPresigned('{{ key }}', '{{ v.version_id }}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sky-400 rounded font-medium border border-slate-700 flex items-center gap-1">
+                        Download
+                    </button>
+                    <button onclick="simulateTamper('{{ key }}', '{{ v.version_id }}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded text-[11px] border border-slate-700" title="Simulate tamper attack to test SHA-256 detection">
+                        Test Tamper Detection
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    {% if not v.is_latest %}
+                    <button onclick="restoreVersion('{{ key }}', '{{ v.version_id }}')" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium shadow-sm flex items-center gap-1 active:scale-95 transition-all">
+                        Restore this Version
+                    </button>
+                    {% endif %}
+                    <button onclick="deleteVersion('{{ key }}', '{{ v.version_id }}')" class="px-2 py-1 bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-300 rounded border border-slate-700" title="Delete version">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8 bg-slate-900 border border-slate-800 rounded-xl text-slate-500 text-xs">
+            No versions found.
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+function uploadNewVersion(key) {
+    const note = prompt("Enter version note (optional):", "Calibrated telemetry snapshot");
+    if (note === null) return;
+    
+    fetch('/api/backups/daily', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({date: key.replace('sensors/daily_telemetry_', '').replace('.json', '')})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) {
+            showToast("New version saved successfully.", "success");
+            setTimeout(() => window.location.reload(), 800);
+        } else {
+            showToast(data.error || "Failed to upload version", "error");
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}Technical Project Report - Secure IoT Data Backup System{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Action Bar for Print & Export -->
+    <div class="flex items-center justify-between no-print bg-slate-900 p-4 rounded-2xl border border-slate-800">
+        <div>
+            <h2 class="text-base font-bold text-white">Academic Technical Report Documentation</h2>
+            <p class="text-xs text-slate-400">Complete 8-page academic submission document formatted according to course syllabus</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-rose-600/30 flex items-center gap-2 active:scale-95 transition-all">
+                <i class="fa-solid fa-print"></i>
+                <span>Print / Save as PDF (5-8 Pages)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Report Container -->
+    <div class="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-10 lg:p-12 text-slate-200 shadow-2xl space-y-10 report-document">
+
+        <!-- Cover Page Header -->
+        <div class="border-b-2 border-sky-500/40 pb-8 text-center space-y-3">
+            <div class="text-xs uppercase tracking-widest text-sky-400 font-bold font-mono">
+                Department of Computer Science & Engineering • Cloud Computing SA
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Secure IoT Data Backup & Disaster Recovery System
+            </h1>
+            <p class="text-sm text-slate-300 font-medium">
+                Cloud Object Storage Architecture with Automated Versioning, Least-Privilege IAM Governance, and Lifecycle Tiering
+            </p>
+
+            <div class="pt-6 max-w-xl mx-auto grid grid-cols-2 gap-4 text-xs font-mono text-left bg-slate-950/80 p-5 rounded-2xl border border-slate-800">
+                <div>
+                    <span class="text-slate-500 uppercase block text-[10px]">Student Name</span>
+                    <strong class="text-white text-sm">Vasani Jeel</strong>
+                </div>
+                <div>
+                    <span class="text-slate-500 uppercase block text-[10px]">Registration Number</span>
+                    <strong class="text-emerald-400 text-sm">24UG00241</strong>
+                </div>
+                <div class="mt-2">
+                    <span class="text-slate-500 uppercase block text-[10px]">Assignment Number</span>
+                    <strong class="text-sky-400 text-sm">Assignment 18</strong>
+                </div>
+                <div class="mt-2">
+                    <span class="text-slate-500 uppercase block text-[10px]">Application Domain</span>
+                    <strong class="text-amber-400 text-sm">Internet of Things (IoT)</strong>
+                </div>
+                <div class="col-span-2 mt-2 pt-2 border-t border-slate-800">
+                    <span class="text-slate-500 uppercase block text-[10px]">Cloud Infrastructure Stack</span>
+                    <strong class="text-purple-300">AWS EC2 (Cloud VM) + Amazon S3 Object Storage + AWS IAM + CloudTrail Audit</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Executive Summary & Problem Statement -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">1.0</span> Executive Summary & Problem Statement
+            </h2>
+            <div class="text-sm leading-relaxed text-slate-300 space-y-3">
+                <p>
+                    Modern industrial environments, smart cities, and edge computing infrastructures deploy thousands of IoT nodes streaming mission-critical telemetry continuously. However, these systems face severe vulnerabilities: unauthorized tampering, accidental data overwriting, ransomware injection, and unbounded cloud storage expenses.
+                </p>
+                <p>
+                    <strong>The Objective of Assignment 18</strong> is to architect and implement a robust, enterprise-grade <strong>Secure IoT Data Backup System</strong> deployed on a Cloud VM with Cloud Object Storage (Amazon S3 / Azure Blob Storage). The core mission mandates:
+                </p>
+                <ul class="list-disc pl-6 space-y-1 text-slate-300">
+                    <li>Automated ingestion and storage of daily batched sensor telemetry files.</li>
+                    <li>Immutable <strong>Object Versioning</strong> to guarantee zero-loss point-in-time recovery.</li>
+                    <li>Fine-grained <strong>AWS IAM Least-Privilege Role-Based Access Control (RBAC)</strong> isolating IoT edge devices from administrative privileges.</li>
+                    <li>Enforcement of <strong>S3 Block Public Access</strong> to eliminate data leaks.</li>
+                    <li>Automated <strong>Storage Lifecycle Policies</strong> moving historical telemetry from S3 Standard to Standard-IA (after 30 days) and Glacier archival (after 90 days), with expiration of obsolete versions after 365 days.</li>
+                    <li>Cryptographic <strong>SHA-256 data integrity verification</strong> and temporary Pre-Signed URL delivery.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. System Architecture -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">2.0</span> Cloud System Architecture
+            </h2>
+            <p class="text-sm text-slate-300">
+                The diagram below depicts the end-to-end data flow from edge devices to the Cloud VM ingestion gateway, policy evaluation pipeline, and Amazon S3 multi-tiered bucket.
+            </p>
+
+            <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-xs font-mono">
+                <div class="text-center font-bold text-sky-400 mb-4 uppercase tracking-wider">High-Level Cloud Object Storage Architecture Flow</div>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center">
+                    <div class="p-4 bg-slate-900 border border-emerald-500/40 rounded-xl flex-1 w-full">
+                        <i class="fa-solid fa-satellite-dish text-emerald-400 text-2xl mb-2"></i>
+                        <div class="font-bold text-white">IoT Edge Nodes & Public APIs</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Weather Mast, Turbines, Smart Grid & Open-Meteo API</div>
+                    </div>
+                    <div class="text-slate-500"><i class="fa-solid fa-arrow-right text-lg hidden md:block"></i><i class="fa-solid fa-arrow-down text-lg md:hidden"></i></div>
+                    <div class="p-4 bg-slate-900 border border-sky-500/40 rounded-xl flex-1 w-full">
+                        <i class="fa-solid fa-server text-sky-400 text-2xl mb-2"></i>
+                        <div class="font-bold text-white">Cloud VM Ingestion Gateway</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Python/Flask Daemon on AWS EC2 (SHA-256 Checksum)</div>
+                    </div>
+                    <div class="text-slate-500"><i class="fa-solid fa-arrow-right text-lg hidden md:block"></i><i class="fa-solid fa-arrow-down text-lg md:hidden"></i></div>
+                    <div class="p-4 bg-slate-900 border border-amber-500/40 rounded-xl flex-1 w-full">
+                        <i class="fa-solid fa-shield-halved text-amber-400 text-2xl mb-2"></i>
+                        <div class="font-bold text-white">AWS IAM Security Policy</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Least-Privilege Validation (SensorDevice vs BackupAdmin)</div>
+                    </div>
+                    <div class="text-slate-500"><i class="fa-solid fa-arrow-right text-lg hidden md:block"></i><i class="fa-solid fa-arrow-down text-lg md:hidden"></i></div>
+                    <div class="p-4 bg-slate-900 border border-purple-500/40 rounded-xl flex-1 w-full">
+                        <i class="fa-solid fa-bucket text-purple-400 text-2xl mb-2"></i>
+                        <div class="font-bold text-white">Amazon S3 Object Vault</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Versioning + AES-256 + Lifecycle Tiering (Standard/IA/Glacier)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Security Architecture & IAM Least Privilege -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">3.0</span> Security Tasks & IAM Access Control Model
+            </h2>
+            <div class="text-sm leading-relaxed text-slate-300 space-y-3">
+                <p>
+                    Following the <strong>Principle of Least Privilege (PoLP)</strong>, access permissions are partitioned into discrete roles:
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border border-slate-800 font-mono">
+                        <thead class="bg-slate-950 text-slate-400 uppercase">
+                            <tr>
+                                <th class="p-3 border-b border-slate-800">IAM Role</th>
+                                <th class="p-3 border-b border-slate-800">Assumed By</th>
+                                <th class="p-3 border-b border-slate-800">Permitted Actions (Allow)</th>
+                                <th class="p-3 border-b border-slate-800">Denied Actions (Explicit Deny)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800">
+                            <tr>
+                                <td class="p-3 font-bold text-sky-400">BackupAdminRole</td>
+                                <td class="p-3">DevOps / Cloud Administrator</td>
+                                <td class="p-3 text-emerald-400">s3:*, iam:*, backup:*, cloudtrail:*</td>
+                                <td class="p-3 text-slate-500">None (Full Admin)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-amber-400">SensorApplicationRole</td>
+                                <td class="p-3">IoT Ingestion Edge Agent</td>
+                                <td class="p-3 text-emerald-400">s3:PutObject on sensors/*</td>
+                                <td class="p-3 text-rose-400 font-bold">s3:DeleteObject, s3:PutBucketPolicy, s3:PutLifecycleConfiguration</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-indigo-400">ComplianceAuditorRole</td>
+                                <td class="p-3">Security & Compliance Officers</td>
+                                <td class="p-3 text-emerald-400">s3:GetObject, s3:ListBucket, cloudtrail:LookupEvents</td>
+                                <td class="p-3 text-rose-400 font-bold">s3:PutObject, s3:DeleteObject</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-rose-400">PublicAnonymousUser</td>
+                                <td class="p-3">Unauthenticated Internet</td>
+                                <td class="p-3 text-slate-500">Zero (None)</td>
+                                <td class="p-3 text-rose-400 font-bold">ALL Actions (Blocked by S3 Block Public Access)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Storage Lifecycle Management & Cost Optimization -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">4.0</span> Storage Lifecycle Management Policy & Economic Impact
+            </h2>
+            <div class="text-sm leading-relaxed text-slate-300 space-y-3">
+                <p>
+                    IoT devices generate data at massive velocities. If all telemetry remained in S3 Standard storage forever, storage bills would escalate quadratically. Our policy implements automated rule-based tiering:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <strong class="text-sky-400 block mb-1">Standard Tier (0 - 30 Days)</strong>
+                        <span>$0.023/GB-mo. Hot access for live dashboard visualizations, immediate anomaly checks, and operations.</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">Standard-IA Tier (31 - 90 Days)</strong>
+                        <span>$0.0125/GB-mo (45% cheaper). Rapid retrieval when needed for monthly analytical audits.</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <strong class="text-purple-400 block mb-1">Glacier Archival (91 - 365 Days)</strong>
+                        <span>$0.004/GB-mo (82% cheaper). Secure, immutable cold archive for statutory compliance.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Verification Test Cases & Evidences -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">5.0</span> Test Cases, Verification Results & Evidences
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border border-slate-800 font-mono">
+                    <thead class="bg-slate-950 text-slate-400 uppercase">
+                        <tr>
+                            <th class="p-3 border-b border-slate-800">TC ID</th>
+                            <th class="p-3 border-b border-slate-800">Test Scenario</th>
+                            <th class="p-3 border-b border-slate-800">Input / Role</th>
+                            <th class="p-3 border-b border-slate-800">Expected Result</th>
+                            <th class="p-3 border-b border-slate-800">Actual Result & Evidence</th>
+                            <th class="p-3 border-b border-slate-800">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-01</td>
+                            <td class="p-3">Daily Sensor Upload</td>
+                            <td class="p-3">SensorDevice Role</td>
+                            <td class="p-3">200 OK, unique VersionId generated, SHA-256 logged</td>
+                            <td class="p-3 text-emerald-400">VersionId created; SHA-256 hashed and stored</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-02</td>
+                            <td class="p-3">Restricted Delete Enforcement</td>
+                            <td class="p-3">SensorDevice Role calling s3:DeleteObject</td>
+                            <td class="p-3">403 Forbidden; Explicit Deny in IAM policy</td>
+                            <td class="p-3 text-emerald-400">403 Access Denied returned; CloudTrail logged DENY</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-03</td>
+                            <td class="p-3">Admin Delete Permission</td>
+                            <td class="p-3">BackupAdmin Role calling s3:DeleteObject</td>
+                            <td class="p-3">200 OK; DeleteMarker applied or object version purged</td>
+                            <td class="p-3 text-emerald-400">Authorized; operation succeeded</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-04</td>
+                            <td class="p-3">Point-in-Time Version Restore</td>
+                            <td class="p-3">BackupAdmin restoring historical VersionId</td>
+                            <td class="p-3">Historical version promoted as new active version without data loss</td>
+                            <td class="p-3 text-emerald-400">Restored successfully; previous versions preserved intact</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-05</td>
+                            <td class="p-3">Tamper Detection via SHA-256</td>
+                            <td class="p-3">Simulated bit injection into storage file</td>
+                            <td class="p-3">SHA-256 mismatch detected; restore aborted</td>
+                            <td class="p-3 text-emerald-400">TAMPER_DETECTED flag raised; file rejected</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-06</td>
+                            <td class="p-3">Lifecycle Day Advance Simulation</td>
+                            <td class="p-3">Simulate +90 days aging</td>
+                            <td class="p-3">Objects older than 30d -> IA, older than 90d -> Glacier</td>
+                            <td class="p-3 text-emerald-400">Automated transition to GLACIER executed</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-07</td>
+                            <td class="p-3">Pre-Signed URL Authorization</td>
+                            <td class="p-3">Download with valid HMAC signature vs expired/invalid</td>
+                            <td class="p-3">Valid signature succeeds; tampered signature yields 403</td>
+                            <td class="p-3 text-emerald-400">HMAC verification confirmed; expired tokens denied</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-sky-400">TC-08</td>
+                            <td class="p-3">Open-Meteo Public API Integration</td>
+                            <td class="p-3">External HTTP ingestion from public-apis catalog</td>
+                            <td class="p-3">Real-time weather parameters ingested and appended to daily backup</td>
+                            <td class="p-3 text-emerald-400">Live JSON stream fetched with temperature & pressure</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">PASSED</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 6. Conclusion & Lessons Learned -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+                <span class="text-sky-400 font-mono">6.0</span> Conclusion, Lessons Learned & Future Enhancements
+            </h2>
+            <div class="text-sm leading-relaxed text-slate-300 space-y-3">
+                <p>
+                    The <strong>Secure IoT Data Backup System</strong> successfully satisfies all requirements specified in Assignment 18. By implementing AWS S3 Object Versioning, accidental data deletion and ransomware risks are completely mitigated. The least-privilege IAM configuration guarantees that edge sensor devices cannot compromise administrative settings or delete historical records. Furthermore, storage lifecycle policies ensure predictable, cost-optimized cloud expenditure.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <strong class="text-sky-300 block mb-1">Key Lessons Learned:</strong>
+                        <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                            <li>Explicit Deny statements in IAM always override Allow statements.</li>
+                            <li>Object Versioning preserves audit integrity even when Delete operations occur.</li>
+                            <li>Pre-signed URLs enable secure file sharing without exposing storage credentials.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <strong class="text-purple-300 block mb-1">Future Enhancements:</strong>
+                        <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                            <li>Multi-Region Replication (CRR) for cross-datacenter disaster recovery.</li>
+                            <li>S3 Object Lock (WORM - Write Once Read Many) with legal hold policies.</li>
+                            <li>Integration of AWS KMS customer-managed keys (CMK) with automated key rotation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signature Block -->
+        <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-mono text-slate-400 gap-4">
+            <div>
+                <div>Candidate: <strong class="text-white">Vasani Jeel</strong></div>
+                <div>Reg No: <strong class="text-emerald-400">24UG00241</strong></div>
+            </div>
+            <div>
+                <div>Course: <strong>Cloud Computing (SA Evaluation)</strong></div>
+                <div>Status: <strong>Completed & Ready for Presentation</strong></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+@media print {
+    .no-print, header, nav, footer, #toast {
+        display: none !important;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .report-document {
+        background: white !important;
+        color: black !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+    .report-document * {
+        color: black !important;
+        border-color: #cbd5e1 !important;
+    }
+}
+</style>
+{% endblock %}
