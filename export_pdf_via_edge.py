@@ -11,6 +11,7 @@ def get_base64_img(path):
 img_dir = r"C:\Users\dell\.gemini\antigravity\brain\0bddacab-2752-4390-9234-c31f912ae85e\.user_uploaded"
 img_vm = get_base64_img(r"D:\Gen Ai\Secure-IoT-Data-Backup-System\vm_screenshot_fresh.png")
 img_web = get_base64_img(r"D:\Gen Ai\Secure-IoT-Data-Backup-System\webapp_screenshot_live.png")
+img_rbac = get_base64_img(r"D:\Gen Ai\Secure-IoT-Data-Backup-System\rbac_modal_screenshot.png")
 img1 = get_base64_img(os.path.join(img_dir, "media_1795373189475_d5922d62.png"))
 img2 = get_base64_img(os.path.join(img_dir, "media_1795373189479_c7fd30a9.png"))
 img3 = get_base64_img(os.path.join(img_dir, "media_1795373189483_ca56fabe.png"))
@@ -313,13 +314,8 @@ html_content = f"""<!DOCTYPE html>
     </thead>
     <tbody>
       <tr>
-        <td class="idx-num">Section 1</td>
-        <td class="idx-title">Project Executive Overview & Technical Problem Statement</td>
-        <td class="idx-page">Page 2</td>
-      </tr>
-      <tr>
-        <td class="idx-num">Section 2</td>
-        <td class="idx-title">Syllabus Compliance Matrix (9 Mandatory Tasks & Cloud Artifacts)</td>
+        <td class="idx-num">Section 1 & 2</td>
+        <td class="idx-title">Project Overview & Syllabus Compliance Matrix (9 Cloud Deliverables)</td>
         <td class="idx-page">Page 2</td>
       </tr>
       <tr>
@@ -333,33 +329,33 @@ html_content = f"""<!DOCTYPE html>
         <td class="idx-page">Page 4</td>
       </tr>
       <tr>
-        <td class="idx-num">Figure 3</td>
-        <td class="idx-title">Daily IoT Sensor Telemetry Ingestion into Amazon S3 Bucket Vault</td>
+        <td class="idx-num">Figure 3 & 4</td>
+        <td class="idx-title">Daily S3 Sensor File Ingestion & Storage Lifecycle Management Policy</td>
         <td class="idx-page">Page 5</td>
       </tr>
       <tr>
-        <td class="idx-num">Figure 4</td>
-        <td class="idx-title">Storage Lifecycle Management Policy Configuration (S3 Multi-Tier Rules)</td>
-        <td class="idx-page">Page 5</td>
-      </tr>
-      <tr>
-        <td class="idx-num">Figure 5</td>
-        <td class="idx-title">S3 Object Versioning Lineage & Point-in-Time Restore Operation Evidence</td>
+        <td class="idx-num">Figure 5 & 6</td>
+        <td class="idx-title">S3 Object Versioning Lineage & Restrict Write Permissions IAM Policy</td>
         <td class="idx-page">Page 6</td>
       </tr>
       <tr>
-        <td class="idx-num">Figure 6</td>
-        <td class="idx-title">Principle of Least Privilege: Restrict Write Permissions IAM Policy</td>
-        <td class="idx-page">Page 6</td>
-      </tr>
-      <tr>
-        <td class="idx-num">Figure 7 & Sec 4</td>
-        <td class="idx-title">BackupAdmin IAM Role Authority, Technical Conclusion & Official Sign-off</td>
+        <td class="idx-num">Figure 7</td>
+        <td class="idx-title">Role-Based Access Control (RBAC) & Least Privilege Enforcement Matrix</td>
         <td class="idx-page">Page 7</td>
+      </tr>
+      <tr>
+        <td class="idx-num">Figure 8</td>
+        <td class="idx-title">BackupAdmin IAM Role Configuration & Full Administrative Authority</td>
+        <td class="idx-page">Page 8</td>
+      </tr>
+      <tr>
+        <td class="idx-num">Section 4 & 5</td>
+        <td class="idx-title">Technical Summary, Architectural Conclusion & Official Sign-off Card</td>
+        <td class="idx-page">Page 8</td>
       </tr>
     </tbody>
   </table>
-  <div class="page-indicator">Page 1 of 7</div>
+  <div class="page-indicator">Page 1 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
@@ -436,9 +432,14 @@ html_content = f"""<!DOCTYPE html>
         <td class="verified">✔ Verified (Figure 6)</td>
       </tr>
       <tr>
+        <td><strong>RBAC Access Control Matrix</strong></td>
+        <td>Application Security Center: Multi-role permission matrix with delete block</td>
+        <td class="verified">✔ Verified (Figure 7)</td>
+      </tr>
+      <tr>
         <td><strong>Create BackupAdmin Role</strong></td>
         <td>IAM Role: BackupAdminRole attached with AmazonS3FullAccess</td>
-        <td class="verified">✔ Verified (Figure 7)</td>
+        <td class="verified">✔ Verified (Figure 8)</td>
       </tr>
       <tr>
         <td><strong>Block Public Access</strong></td>
@@ -447,7 +448,7 @@ html_content = f"""<!DOCTYPE html>
       </tr>
     </tbody>
   </table>
-  <div class="page-indicator">Page 2 of 7</div>
+  <div class="page-indicator">Page 2 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
@@ -474,7 +475,7 @@ html_content = f"""<!DOCTYPE html>
       <strong>(4) Attached Security Role:</strong> The instance profile is attached with 'BackupAdminRole', enabling the VM to securely interact with the Amazon S3 storage vault ('s3://iot-sensor-vault-jeel') via temporary STS credentials.
     </div>
   </div>
-  <div class="page-indicator">Page 3 of 7</div>
+  <div class="page-indicator">Page 3 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
@@ -494,7 +495,7 @@ html_content = f"""<!DOCTYPE html>
       <strong>(3) Role Switcher & Multi-Device Monitoring:</strong> Supports stream segregation (Environmental, Wind Turbine, Smart Grid, HVAC) under the active 'BackupAdmin' administrative session.
     </div>
   </div>
-  <div class="page-indicator">Page 4 of 7</div>
+  <div class="page-indicator">Page 4 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
@@ -531,7 +532,7 @@ html_content = f"""<!DOCTYPE html>
       <strong>(4) Automated Deletion:</strong> Noncurrent versions are permanently expired after 365 days, preventing unbounded storage accumulation.
     </div>
   </div>
-  <div class="page-indicator">Page 5 of 7</div>
+  <div class="page-indicator">Page 5 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
@@ -567,21 +568,42 @@ html_content = f"""<!DOCTYPE html>
       Under AWS IAM evaluation logic, an explicit Deny unconditionally overrides any Allow, preventing edge sensor nodes from overwriting historical archives or executing malicious deletion commands.
     </div>
   </div>
-  <div class="page-indicator">Page 6 of 7</div>
+  <div class="page-indicator">Page 6 of 8</div>
 </div>
 
 <!-- ========================================================================= -->
-<!-- PAGE 7: FIGURE 7 (BACKUPADMIN ROLE), CONCLUSION & SUBMISSION SIGN-OFF     -->
+<!-- PAGE 7: FIGURE 7 (RBAC MODAL ACCESS CONTROL MATRIX)                       -->
 <!-- ========================================================================= -->
 <div class="page">
-  <!-- FIGURE 7: BACKUPADMIN ROLE CONFIGURATION -->
+  <!-- FIGURE 7: RBAC MODAL ACCESS CONTROL MATRIX -->
   <div class="figure-card">
-    <div class="figure-title">Figure 7: BackupAdmin IAM Role Configuration & Full Administrative Authority</div>
+    <div class="figure-title">Figure 7: Role-Based Access Control (RBAC) & Least Privilege Enforcement Matrix</div>
+    <div class="img-wrapper"><img src="{img_rbac}"/></div>
+    <div class="caption">Live Web Application Security Center: Granular RBAC permission grid governing access across industrial sensor streams</div>
+    <div class="explanation">
+      <strong>• Specific Evidence Explanation:</strong><br/>
+      Figure 7 illustrates the live Role-Based Access Control (RBAC) permission enforcement modal implemented in the web application gateway:<br/>
+      <strong>(1) Principle of Least Privilege (PoLP):</strong> The table explicitly details the security boundaries across 5 operational roles (BackupAdmin, Sensor Application, Compliance Auditor, Field Operations Tech, External Contractor).<br/>
+      <strong>(2) Strict Deletion Denial for Sensor Applications:</strong> For the 'Sensor Application' role, permissions are rigidly configured as: Read = YES, Upload = YES, Delete = NO (Restricted), Restore = NO, Admin = NO. This directly verifies Course Security Task 2 ('Restrict write permissions to sensor applications').<br/>
+      <strong>(3) Comprehensive Administrative Authority:</strong> The 'BackupAdmin' identity is granted complete administrative control (Read, Upload, Delete, Restore, Admin = YES) across all sensor streams, satisfying Course Security Task 1.<br/>
+      <strong>(4) Real-Time Denial & Audit Log:</strong> Attempted deletions by restricted roles automatically trigger a '403 Forbidden' denial and register immediate security incident alerts for administrative review.
+    </div>
+  </div>
+  <div class="page-indicator">Page 7 of 8</div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 8: FIGURE 8 (BACKUPADMIN ROLE), CONCLUSION & SUBMISSION SIGN-OFF     -->
+<!-- ========================================================================= -->
+<div class="page">
+  <!-- FIGURE 8: BACKUPADMIN ROLE CONFIGURATION -->
+  <div class="figure-card">
+    <div class="figure-title">Figure 8: BackupAdmin IAM Role Configuration & Full Administrative Authority</div>
     <div class="img-wrapper img-wrapper-compact"><img src="{img5}"/></div>
     <div class="caption">AWS IAM Role Creation Screen: BackupAdminRole with AmazonS3FullAccess policy attached</div>
     <div class="explanation">
       <strong>• Specific Evidence Explanation:</strong><br/>
-      Figure 7 verifies Security Task 1: 'Create BackupAdmin role' (Deliverable 3).
+      Figure 8 verifies Security Task 1: 'Create BackupAdmin role' (Deliverable 3).
       The IAM role named 'BackupAdminRole' is configured with an EC2 service trust policy ('ec2.amazonaws.com'),
       enabling the cloud virtual machine hosting the backup gateway to assume credentials securely via the AWS metadata service.
       Attached with the managed policy 'AmazonS3FullAccess', the BackupAdmin role possesses elevated privileges required for disaster recovery operations:
@@ -604,7 +626,7 @@ html_content = f"""<!DOCTYPE html>
     <strong>Live Cloud Project URL:</strong> <a href="http://3.25.136.151:5000/">http://3.25.136.151:5000/</a> (AWS EC2 i-05ce0744eaeecba10, t3.micro, State: Running)<br/>
     <strong>GitHub Code Repository:</strong> <a href="https://github.com/jeel190/Secure-IoT-Data-backup-System">https://github.com/jeel190/Secure-IoT-Data-backup-System</a> | <strong>S3 Vault:</strong> s3://iot-sensor-vault-jeel
   </div>
-  <div class="page-indicator">Page 7 of 7</div>
+  <div class="page-indicator">Page 8 of 8</div>
 </div>
 
 </body>
@@ -628,7 +650,7 @@ cmd = [
     temp_html
 ]
 
-print("[*] Running Edge to export clean 7-page PDF...")
+print("[*] Running Edge to export clean 8-page PDF...")
 res = subprocess.run(cmd, capture_output=True, text=True)
 if os.path.exists(pdf_out):
     print(f"[+] PDF generated successfully at: {pdf_out} (Size: {os.path.getsize(pdf_out)} bytes)")

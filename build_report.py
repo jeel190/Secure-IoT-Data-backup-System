@@ -183,15 +183,14 @@ def create_report():
         r.font.color.rgb = RGBColor(255, 255, 255)
 
     index_items = [
-        ("Section 1", "Project Executive Overview & Technical Problem Statement", "Page 2"),
-        ("Section 2", "Syllabus Compliance Matrix (9 Cloud Deliverables & Security Tasks)", "Page 2"),
+        ("Section 1 & 2", "Project Overview & Syllabus Compliance Matrix (9 Cloud Deliverables)", "Page 2"),
         ("Figure 1", "AWS EC2 Cloud Virtual Machine (VM) Specification & Active Running Status", "Page 3"),
         ("Figure 2", "Live IoT Backup Web Application Deployed on EC2 Public IP (Port 5000)", "Page 4"),
-        ("Figure 3", "Daily IoT Sensor Telemetry Ingestion into Amazon S3 Bucket Vault", "Page 5"),
-        ("Figure 4", "Storage Lifecycle Management Policy Configuration (S3 Multi-Tier Rules)", "Page 5"),
-        ("Figure 5", "S3 Object Versioning Lineage & Point-in-Time Restore Operation Evidence", "Page 6"),
-        ("Figure 6", "Principle of Least Privilege: Restrict Write Permissions IAM Policy", "Page 6"),
-        ("Figure 7 & Sec 4", "BackupAdmin IAM Role Authority, Technical Conclusion & Official Sign-off", "Page 7")
+        ("Figure 3 & 4", "Daily S3 Sensor File Ingestion & Storage Lifecycle Management Policy", "Page 5"),
+        ("Figure 5 & 6", "S3 Object Versioning Lineage & Restrict Write Permissions IAM Policy", "Page 6"),
+        ("Figure 7", "Role-Based Access Control (RBAC) & Least Privilege Enforcement Matrix", "Page 7"),
+        ("Figure 8", "BackupAdmin IAM Role Configuration & Full Administrative Authority", "Page 8"),
+        ("Section 4 & 5", "Technical Summary, Architectural Conclusion & Official Sign-off Card", "Page 8")
     ]
 
     for idx, (col0, col1, col2) in enumerate(index_items, 1):
@@ -249,7 +248,7 @@ def create_report():
     run_comp.font.size = Pt(10)
     run_comp.font.color.rgb = COLOR_TEXT
 
-    matrix_table = doc.add_table(rows=11, cols=3)
+    matrix_table = doc.add_table(rows=12, cols=3)
     matrix_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     matrix_table.autofit = False
 
@@ -276,7 +275,8 @@ def create_report():
         ("S3 Object Versioning Evidence", "Bucket Versioning Enabled: immutable multi-version tracking per object", "Verified (Figure 5)"),
         ("Restore Operation Execution", "Snapshot rollback promoting previous version as active after deletion", "Verified (Figure 5)"),
         ("Restrict Write to Sensors", "IAM Policy: RestrictSensorWriteOnlyPolicy (Allow PutObject, Deny Delete)", "Verified (Figure 6)"),
-        ("Create BackupAdmin Role", "IAM Role: BackupAdminRole attached with AmazonS3FullAccess", "Verified (Figure 7)"),
+        ("RBAC Access Control Matrix", "Application Security Center: Multi-role permission matrix with delete block", "Verified (Figure 7)"),
+        ("Create BackupAdmin Role", "IAM Role: BackupAdminRole attached with AmazonS3FullAccess", "Verified (Figure 8)"),
         ("Block Public Access", "Private S3 Vault: Block all public access enabled with signed HMAC access", "Verified (S3 Properties)")
     ]
 
@@ -551,38 +551,77 @@ def create_report():
     doc.add_page_break()
 
     # =========================================================================
-    # PAGE 7: FIGURE 7 (BACKUPADMIN ROLE), CONCLUSION & SUBMISSION SIGN-OFF
+    # PAGE 7: FIGURE 7 (RBAC MODAL ACCESS CONTROL MATRIX)
     # =========================================================================
-
-    # --- FIGURE 7: BACKUPADMIN ROLE CONFIGURATION ---
     p_f7 = doc.add_paragraph()
-    p_f7.paragraph_format.space_before = Pt(4)
-    p_f7.paragraph_format.space_after = Pt(2)
+    p_f7.paragraph_format.space_before = Pt(8)
+    p_f7.paragraph_format.space_after = Pt(3)
     p_f7.paragraph_format.keep_with_next = True
-    r_f7_title = p_f7.add_run("Figure 7: BackupAdmin IAM Role Configuration & Full Administrative Authority")
+    r_f7_title = p_f7.add_run("Figure 7: Role-Based Access Control (RBAC) & Least Privilege Enforcement Matrix")
     r_f7_title.bold = True
-    r_f7_title.font.size = Pt(10)
+    r_f7_title.font.size = Pt(11)
     r_f7_title.font.color.rgb = COLOR_SECONDARY
 
-    img5_path = os.path.join(img_dir, "media_1795373189490_5b30b138.png")
-    if os.path.exists(img5_path):
-        doc.add_picture(img5_path, width=Inches(6.4))
+    img_rbac_path = r"D:\Gen Ai\Secure-IoT-Data-Backup-System\rbac_modal_screenshot.png"
+    if os.path.exists(img_rbac_path):
+        doc.add_picture(img_rbac_path, width=Inches(6.5))
         p_cap7 = doc.add_paragraph()
         p_cap7.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_cap7.paragraph_format.space_before = Pt(2)
-        p_cap7.paragraph_format.space_after = Pt(3)
-        r_cap7 = p_cap7.add_run("AWS IAM Role Creation Screen: BackupAdminRole with AmazonS3FullAccess policy attached")
-        r_cap7.font.size = Pt(8)
+        p_cap7.paragraph_format.space_before = Pt(3)
+        p_cap7.paragraph_format.space_after = Pt(6)
+        r_cap7 = p_cap7.add_run("Live Web Application Security Center: Granular RBAC permission grid governing access across industrial sensor streams")
+        r_cap7.font.size = Pt(8.5)
         r_cap7.font.italic = True
         r_cap7.font.color.rgb = COLOR_MUTED
 
     p_f7_desc = doc.add_paragraph()
-    p_f7_desc.paragraph_format.space_before = Pt(2)
-    p_f7_desc.paragraph_format.space_after = Pt(8)
-    p_f7_desc.paragraph_format.line_spacing = 1.15
+    p_f7_desc.paragraph_format.space_before = Pt(4)
+    p_f7_desc.paragraph_format.space_after = Pt(12)
+    p_f7_desc.paragraph_format.line_spacing = 1.25
     p_f7_desc.add_run(
         "• Specific Evidence Explanation:\n"
-        "Figure 7 verifies Security Task 1: 'Create BackupAdmin role' (Deliverable 3). "
+        "Figure 7 illustrates the live Role-Based Access Control (RBAC) permission enforcement modal implemented in the web application gateway:\n"
+        "(1) Principle of Least Privilege (PoLP): The table explicitly details the security boundaries across 5 operational roles (BackupAdmin, Sensor Application, Compliance Auditor, Field Operations Tech, External Contractor).\n"
+        "(2) Strict Deletion Denial for Sensor Applications: For the 'Sensor Application' role, permissions are rigidly configured as: Read = YES, Upload = YES, Delete = NO (Restricted), Restore = NO, Admin = NO. This directly verifies Course Security Task 2 ('Restrict write permissions to sensor applications').\n"
+        "(3) Comprehensive Administrative Authority: The 'BackupAdmin' identity is granted complete administrative control (Read, Upload, Delete, Restore, Admin = YES) across all sensor streams, satisfying Course Security Task 1.\n"
+        "(4) Real-Time Denial & Audit Log: Attempted deletions by restricted roles automatically trigger a '403 Forbidden' denial and register immediate security incident alerts for administrative review."
+    ).font.size = Pt(9.5)
+
+    doc.add_page_break()
+
+    # =========================================================================
+    # PAGE 8: FIGURE 8 (BACKUPADMIN ROLE), CONCLUSION & SUBMISSION SIGN-OFF
+    # =========================================================================
+
+    # --- FIGURE 8: BACKUPADMIN ROLE CONFIGURATION ---
+    p_f8 = doc.add_paragraph()
+    p_f8.paragraph_format.space_before = Pt(4)
+    p_f8.paragraph_format.space_after = Pt(2)
+    p_f8.paragraph_format.keep_with_next = True
+    r_f8_title = p_f8.add_run("Figure 8: BackupAdmin IAM Role Configuration & Full Administrative Authority")
+    r_f8_title.bold = True
+    r_f8_title.font.size = Pt(10)
+    r_f8_title.font.color.rgb = COLOR_SECONDARY
+
+    img5_path = os.path.join(img_dir, "media_1795373189490_5b30b138.png")
+    if os.path.exists(img5_path):
+        doc.add_picture(img5_path, width=Inches(6.4))
+        p_cap8 = doc.add_paragraph()
+        p_cap8.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap8.paragraph_format.space_before = Pt(2)
+        p_cap8.paragraph_format.space_after = Pt(3)
+        r_cap8 = p_cap8.add_run("AWS IAM Role Creation Screen: BackupAdminRole with AmazonS3FullAccess policy attached")
+        r_cap8.font.size = Pt(8)
+        r_cap8.font.italic = True
+        r_cap8.font.color.rgb = COLOR_MUTED
+
+    p_f8_desc = doc.add_paragraph()
+    p_f8_desc.paragraph_format.space_before = Pt(2)
+    p_f8_desc.paragraph_format.space_after = Pt(8)
+    p_f8_desc.paragraph_format.line_spacing = 1.15
+    p_f8_desc.add_run(
+        "• Specific Evidence Explanation:\n"
+        "Figure 8 verifies Security Task 1: 'Create BackupAdmin role' (Deliverable 3). "
         "The IAM role named 'BackupAdminRole' is configured with an EC2 service trust policy ('ec2.amazonaws.com'), "
         "enabling the cloud virtual machine hosting the backup gateway to assume credentials securely via the AWS metadata service. "
         "Attached with the managed policy 'AmazonS3FullAccess', the BackupAdmin role possesses elevated privileges required for "
